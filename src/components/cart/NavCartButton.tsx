@@ -238,10 +238,11 @@ export function NavCartButton() {
                             price={activeItem.price}
                             image={activeItem.image}
                             onConfirm={(order) => {
-                              placeOrder(activeItem, order);
+                              const confirmedItem = activeItem;
                               closeTimerRef.current = setTimeout(() => {
+                                placeOrder(confirmedItem, order);
                                 setOpen(false);
-                              }, 1150);
+                              }, 2400);
                             }}
                           />
 
