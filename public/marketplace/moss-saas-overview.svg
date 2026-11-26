@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none">
+  <defs>
+    <linearGradient id="bg-moss-saas-overview.svg" x1="0" y1="0" x2="800" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#383B34"/>
+      <stop offset="100%" stop-color="#272A23"/>
+    </linearGradient>
+    <radialGradient id="glow-moss-saas-overview.svg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#A5CE79" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#789B55" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" rx="24" fill="url(#bg-moss-saas-overview.svg)"/>
+  <path d="M202 0V500 M374 0V500 M546 0V500" stroke="#F4F5EF" stroke-opacity="0.06"/>
+  <circle cx="660" cy="88" r="180" fill="url(#glow-moss-saas-overview.svg)"/>
+  <rect x="44" y="34" width="712" height="432" rx="26" fill="#41443B" fill-opacity="0.38" stroke="#F4F5EF" stroke-opacity="0.12"/>
+  <circle cx="76" cy="64" r="6" fill="#A5CE79"/>
+  <text x="94" y="69" fill="#A5CE79" font-family="monospace" font-size="13" letter-spacing="1.5">SAAS PRODUCTS</text>
+  <text x="64" y="102" fill="#F4F5EF" font-family="sans-serif" font-size="24" font-weight="600">Moss Workspace Starter</text>
+  <text x="64" y="124" fill="#D5D8CE" font-family="sans-serif" font-size="14">Multi-Tenant Workspace Shell</text>
+  
+        <rect x="64" y="138" width="150" height="304" rx="18" fill="#2B2F27" stroke="#F4F5EF" stroke-opacity="0.14"/>
+        <rect x="84" y="166" width="110" height="16" rx="6" fill="#A5CE79" fill-opacity="0.65"/>
+        <rect x="84" y="202" width="96" height="12" rx="5" fill="#F4F5EF" fill-opacity="0.28"/>
+        <rect x="84" y="228" width="104" height="12" rx="5" fill="#F4F5EF" fill-opacity="0.18"/>
+        <rect x="84" y="254" width="88" height="12" rx="5" fill="#F4F5EF" fill-opacity="0.18"/>
+        <rect x="234" y="138" width="502" height="92" rx="18" fill="#32362E" stroke="#A5CE79" stroke-opacity="0.28"/>
+        <rect x="258" y="162" width="130" height="16" rx="5" fill="#F4F5EF" fill-opacity="0.8"/>
+        <rect x="258" y="190" width="220" height="12" rx="5" fill="#A5CE79" fill-opacity="0.55"/>
+        <rect x="234" y="248" width="242" height="194" rx="18" fill="#32362E" stroke="#F4F5EF" stroke-opacity="0.14"/>
+        <rect x="494" y="248" width="242" height="194" rx="18" fill="#32362E" stroke="#F4F5EF" stroke-opacity="0.14"/>
+        <path d="M262 396 L310 356 L360 370 L414 316 L448 328" fill="none" stroke="#A5CE79" stroke-width="3.5" stroke-linecap="round"/>
+        <rect x="520" y="282" width="188" height="18" rx="6" fill="#F4F5EF" fill-opacity="0.72"/>
+        <rect x="520" y="316" width="160" height="14" rx="5" fill="#F4F5EF" fill-opacity="0.28"/>
+        <rect x="520" y="346" width="174" height="14" rx="5" fill="#F4F5EF" fill-opacity="0.22"/>
+        <rect x="520" y="382" width="110" height="28" rx="14" fill="#789B55"/>
+      
+</svg>

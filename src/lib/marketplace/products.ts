@@ -1,0 +1,501 @@
+import type { ProductRecord } from "./types";
+
+/**
+ * Centralized Phase 3 sample/demo product catalogue.
+ * Structured to map directly to future Supabase tables (`products`, `product_images`,
+ * `product_features`, `product_tags`) in Phase 4 without component refactoring.
+ * Note: All items are clearly flagged `isDemoRecord: true` with honest availability statuses.
+ */
+export const PRODUCTS_CATALOGUE: ProductRecord[] = [
+  {
+    id: "prod-sylva-living-web",
+    slug: "sylva-nature-tech-studio-template",
+    name: "Sylva Nature-Tech Studio Template",
+    shortDescription:
+      "A 3D WebGL living-green studio template combining Three.js foliage scenes, glassmorphism, and Next.js App Router.",
+    fullDescription:
+      "Engineered around THE BHANU's living-green aesthetic, this sample studio template pairs a procedural Three.js moss and butterfly hero with scroll-choreographed sections, light/dark olive-charcoal themes, and technical SEO foundations. Built for digital studios and creative software teams seeking atmospheric depth without sacrificing accessibility or responsiveness.",
+    categorySlug: "websites-and-templates",
+    productType: "Next.js Studio Template",
+    thumbnail: {
+      id: "img-sylva-1",
+      url: "/marketplace/sylva-studio-overview.svg",
+      alt: "Sylva Nature-Tech Studio Template main hero and navigation preview",
+      caption: "Primary hero stage with Three.js foliage & glass navigation",
+    },
+    gallery: [
+      {
+        id: "img-sylva-1",
+        url: "/marketplace/sylva-studio-overview.svg",
+        alt: "Sylva Nature-Tech Studio Template main hero and navigation preview",
+        caption: "Primary hero stage with Three.js foliage & glass navigation",
+      },
+      {
+        id: "img-sylva-2",
+        url: "/marketplace/sylva-studio-sections.svg",
+        alt: "Scroll-choreographed living-world section cards and reveal layout",
+        caption: "Scroll-linked living roots backdrop & translucent glass cards",
+      },
+      {
+        id: "img-sylva-3",
+        url: "/marketplace/sylva-studio-themes.svg",
+        alt: "Dark olive charcoal and warm ivory theme token comparison",
+        caption: "Dual Dark Olive Charcoal & Warm Ivory theme architecture",
+      },
+    ],
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Three.js", "Framer Motion"],
+    features: [
+      "Procedural Three.js moss root and butterfly hero integration",
+      "Persistent Dark, Light, and System theme modes via CSS variables",
+      "Staggered mask-wipe reveal animations respecting reduced motion",
+      "Dynamic sitemap.xml, robots.txt, and JSON-LD structured data",
+      "Responsive layout verified across mobile, tablet, and desktop viewports",
+    ],
+    status: "Available",
+    featured: true,
+    isDemoRecord: true,
+    previewUrl: "/#top",
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-20T09:00:00.000Z",
+    updatedAt: "2026-11-25T10:00:00.000Z",
+    seoTitle: "Sylva Nature-Tech Studio Template",
+    seoDescription:
+      "Explore the Sylva Nature-Tech Studio Template sample in THE BHANU Marketplace featuring Next.js, Three.js WebGL scenes, and dual green themes.",
+  },
+  {
+    id: "prod-canopy-launch-page",
+    slug: "canopy-webgl-product-launch-page",
+    name: "Canopy WebGL Launch Page",
+    shortDescription:
+      "High-contrast interactive product launch landing page with liquid-metal CTA shaders and modular feature bands.",
+    fullDescription:
+      "Canopy is a sample conversion-focused landing page engineered for software launches and hardware-inspired digital products. It pairs crisp typographic hierarchy with WebGL2 dispersion CTA pills, structured specification tables, and semantic HTML sections that degrade cleanly when WebGL is unavailable.",
+    categorySlug: "landing-pages",
+    productType: "Landing Page Template",
+    thumbnail: {
+      id: "img-canopy-1",
+      url: "/marketplace/canopy-launch-overview.svg",
+      alt: "Canopy WebGL Launch Page desktop showcase preview",
+      caption: "Hero launch stage with dispersion button & spec strip",
+    },
+    gallery: [
+      {
+        id: "img-canopy-1",
+        url: "/marketplace/canopy-launch-overview.svg",
+        alt: "Canopy WebGL Launch Page desktop showcase preview",
+        caption: "Hero launch stage with dispersion button & spec strip",
+      },
+      {
+        id: "img-canopy-2",
+        url: "/marketplace/canopy-launch-mobile.svg",
+        alt: "Canopy WebGL Launch Page responsive mobile stack",
+        caption: "Touch-ready mobile layout and compact action bar",
+      },
+    ],
+    technologies: ["Next.js", "TypeScript", "WebGL2", "Tailwind CSS"],
+    features: [
+      "Single-screen product headline and structured value proposition",
+      "WebGL2 liquid-metal dispersion button with graceful CSS fallback",
+      "Zero-layout-shift responsive grid and fluid type scale",
+      "Pre-configured Open Graph and social preview metadata",
+    ],
+    status: "Available",
+    featured: true,
+    isDemoRecord: true,
+    previewUrl: "/#products",
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-18T11:30:00.000Z",
+    updatedAt: "2026-11-24T15:00:00.000Z",
+    seoTitle: "Canopy WebGL Launch Page",
+    seoDescription:
+      "Interactive WebGL product launch landing page sample built with Next.js, TypeScript, and Tailwind CSS in THE BHANU Marketplace.",
+  },
+  {
+    id: "prod-veridian-portal-app",
+    slug: "veridian-client-portal-stack",
+    name: "Veridian Client Portal Stack",
+    shortDescription:
+      "Full-stack client portal blueprint for project milestones, deliverable tracking, and structured enquiry workflows.",
+    fullDescription:
+      "Designed as an extensible foundation for agencies and product studios, the Veridian Client Portal Stack models clean PostgreSQL tables for customer profiles, project milestones, quotation logs, and status notifications.",
+    categorySlug: "full-stack-applications",
+    productType: "Full-Stack Application",
+    thumbnail: {
+      id: "img-veridian-1",
+      url: "/marketplace/veridian-portal-overview.svg",
+      alt: "Veridian Client Portal Stack milestone and enquiry interface preview",
+      caption: "Client milestone timeline and project overview workspace",
+    },
+    gallery: [
+      {
+        id: "img-veridian-1",
+        url: "/marketplace/veridian-portal-overview.svg",
+        alt: "Veridian Client Portal Stack milestone and enquiry interface preview",
+        caption: "Client milestone timeline and project overview workspace",
+      },
+      {
+        id: "img-veridian-2",
+        url: "/marketplace/veridian-portal-schema.svg",
+        alt: "Veridian Client Portal Stack normalized relational schema diagram",
+        caption: "Normalized PostgreSQL & RLS policy schema blueprint",
+      },
+    ],
+    technologies: ["Next.js", "TypeScript", "Supabase", "PostgreSQL", "Tailwind CSS"],
+    features: [
+      "Milestone tracking view with transparent phase status indicators",
+      "Customer enquiry history and structured quotation breakdown",
+      "Row-Level Security (RLS) compatible data schema design",
+      "Server-rendered route protection architecture",
+    ],
+    status: "Under Development",
+    featured: true,
+    isDemoRecord: true,
+    previewUrl: null,
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-15T10:00:00.000Z",
+    updatedAt: "2026-11-23T12:00:00.000Z",
+    seoTitle: "Veridian Client Portal Stack",
+    seoDescription:
+      "Full-stack client portal application blueprint for project milestones and enquiry tracking, in development at THE BHANU.",
+  },
+  {
+    id: "prod-moss-saas-core",
+    slug: "moss-saas-workspace-starter",
+    name: "Moss SaaS Workspace Starter",
+    shortDescription:
+      "Multi-tenant SaaS starter architecture featuring workspace switching, role permissions, and modular onboarding.",
+    fullDescription:
+      "Moss SaaS Workspace Starter provides a structured multi-tenant TypeScript codebase built on Next.js App Router. It separates tenant isolation, audit logging, and settings management into clean service modules ready for Supabase Auth and database persistence.",
+    categorySlug: "saas-products",
+    productType: "SaaS Starter",
+    thumbnail: {
+      id: "img-moss-1",
+      url: "/marketplace/moss-saas-overview.svg",
+      alt: "Moss SaaS Workspace Starter multi-tenant workspace preview",
+      caption: "Workspace switcher, member permissions, and usage overview",
+    },
+    gallery: [
+      {
+        id: "img-moss-1",
+        url: "/marketplace/moss-saas-overview.svg",
+        alt: "Moss SaaS Workspace Starter multi-tenant workspace preview",
+        caption: "Workspace switcher, member permissions, and usage overview",
+      },
+      {
+        id: "img-moss-2",
+        url: "/marketplace/moss-saas-roles.svg",
+        alt: "Role-based access control matrix view in Moss SaaS Starter",
+        caption: "Role-based access matrix and audit log structure",
+      },
+    ],
+    technologies: ["Next.js", "React", "TypeScript", "PostgreSQL", "Tailwind CSS"],
+    features: [
+      "Organization and workspace boundary model",
+      "Role-based permission guards for Owner, Admin, and Member scopes",
+      "Modular onboarding flow and workspace settings shell",
+      "Clean audit log event hooks for sensitive actions",
+    ],
+    status: "Coming Soon",
+    featured: false,
+    isDemoRecord: true,
+    previewUrl: null,
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-12T14:00:00.000Z",
+    updatedAt: "2026-11-22T09:30:00.000Z",
+    seoTitle: "Moss SaaS Workspace Starter",
+    seoDescription:
+      "Multi-tenant Next.js and TypeScript SaaS starter architecture with role-based access and workspace management.",
+  },
+  {
+    id: "prod-fieldnote-android",
+    slug: "fieldnote-compose-android-kit",
+    name: "FieldNote Compose Android Kit",
+    shortDescription:
+      "Clean Jetpack Compose Android application starter with Material 3 olive-green theming and offline Room caching.",
+    fullDescription:
+      "FieldNote is a sample Android application architecture crafted in Kotlin and Jetpack Compose. It demonstrates local-first persistence with Room, unidirectional state flow via ViewModel, adaptive Material 3 olive-and-ivory color palettes, and clean API synchronization patterns.",
+    categorySlug: "android-applications",
+    productType: "Android Starter App",
+    thumbnail: {
+      id: "img-fieldnote-1",
+      url: "/marketplace/fieldnote-android-overview.svg",
+      alt: "FieldNote Compose Android Kit mobile screens preview",
+      caption: "Jetpack Compose screens in Dark Olive and Warm Ivory themes",
+    },
+    gallery: [
+      {
+        id: "img-fieldnote-1",
+        url: "/marketplace/fieldnote-android-overview.svg",
+        alt: "FieldNote Compose Android Kit mobile screens preview",
+        caption: "Jetpack Compose screens in Dark Olive and Warm Ivory themes",
+      },
+      {
+        id: "img-fieldnote-2",
+        url: "/marketplace/fieldnote-android-arch.svg",
+        alt: "FieldNote Android MVVM and Room offline-sync architecture diagram",
+        caption: "Offline-first Room + Repository state architecture",
+      },
+    ],
+    technologies: ["Kotlin", "Jetpack Compose", "Material 3", "Room DB", "Coroutines"],
+    features: [
+      "100% Jetpack Compose UI with Material 3 adaptive theming",
+      "Offline-first Room database caching and sync queue",
+      "Unidirectional MVI/MVVM state management pattern",
+      "Accessible touch targets and TalkBack content descriptions",
+    ],
+    status: "Coming Soon",
+    featured: false,
+    isDemoRecord: true,
+    previewUrl: null,
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-10T08:45:00.000Z",
+    updatedAt: "2026-11-20T16:15:00.000Z",
+    seoTitle: "FieldNote Compose Android Kit",
+    seoDescription:
+      "Kotlin and Jetpack Compose Android application starter with Material 3 nature-tech theming and offline Room caching.",
+  },
+  {
+    id: "prod-nature-glass-ui",
+    slug: "nature-glass-react-ui-kit",
+    name: "Nature-Glass React UI Kit",
+    shortDescription:
+      "Accessible React & Tailwind CSS component library featuring frosted olive-glass cards, pill navs, and reveal wrappers.",
+    fullDescription:
+      "The Nature-Glass React UI Kit packages THE BHANU's core interface primitives—frosted glass cards, semantic section headings, accessible buttons, theme toggles, and Framer Motion reveal wrappers—into clean, copy-ready TypeScript components designed for WCAG AA+ contrast in both Dark and Light modes.",
+    categorySlug: "ui-kits-and-components",
+    productType: "React UI Kit",
+    thumbnail: {
+      id: "img-ui-1",
+      url: "/marketplace/nature-glass-ui-overview.svg",
+      alt: "Nature-Glass React UI Kit components and token sheet preview",
+      caption: "Frosted glass cards, buttons, badges, and theme tokens",
+    },
+    gallery: [
+      {
+        id: "img-ui-1",
+        url: "/marketplace/nature-glass-ui-overview.svg",
+        alt: "Nature-Glass React UI Kit components and token sheet preview",
+        caption: "Frosted glass cards, buttons, badges, and theme tokens",
+      },
+      {
+        id: "img-ui-2",
+        url: "/marketplace/nature-glass-ui-states.svg",
+        alt: "Button, input, and badge interactive focus and theme states",
+        caption: "Accessible focus indicators and dual-theme contrast pairs",
+      },
+    ],
+    technologies: ["React", "TypeScript", "Tailwind CSS", "Framer Motion", "Lucide Icons"],
+    features: [
+      "CSS custom property token architecture for Dark, Light, and System themes",
+      "Keyboard-accessible navigation, drawers, and visible focus rings",
+      "Reduced-motion-safe reveal and hover transitions",
+      "Zero external UI framework lock-in",
+    ],
+    status: "Available",
+    featured: true,
+    isDemoRecord: true,
+    previewUrl: "/#services",
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-22T10:15:00.000Z",
+    updatedAt: "2026-11-25T11:00:00.000Z",
+    seoTitle: "Nature-Glass React UI Kit",
+    seoDescription:
+      "Reusable React and Tailwind CSS glassmorphism UI components built with Forest Green, Moss Green, and Warm Ivory tokens.",
+  },
+  {
+    id: "prod-studio-ops-console",
+    slug: "bhanu-admin-operations-dashboard",
+    name: "Studio Ops Admin Dashboard",
+    shortDescription:
+      "Modular admin console layout for product catalogue management, enquiry triage, SEO settings, and audit logs.",
+    fullDescription:
+      "Studio Ops Admin Dashboard establishes the enterprise-grade information architecture planned for THE BHANU operations. It includes responsive data tables, lifecycle status pills, media asset pickers, and role-aware navigation designed around real database entities.",
+    categorySlug: "admin-dashboards",
+    productType: "Admin Console Template",
+    thumbnail: {
+      id: "img-admin-1",
+      url: "/marketplace/studio-ops-admin-overview.svg",
+      alt: "Studio Ops Admin Dashboard catalogue and analytics layout preview",
+      caption: "Product studio manager and enquiry pipeline overview",
+    },
+    gallery: [
+      {
+        id: "img-admin-1",
+        url: "/marketplace/studio-ops-admin-overview.svg",
+        alt: "Studio Ops Admin Dashboard catalogue and analytics layout preview",
+        caption: "Product studio manager and enquiry pipeline overview",
+      },
+      {
+        id: "img-admin-2",
+        url: "/marketplace/studio-ops-admin-editor.svg",
+        alt: "Product creation form and SEO metadata panel preview",
+        caption: "Structured product editor with SEO and lifecycle controls",
+      },
+    ],
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "PostgreSQL"],
+    features: [
+      "Product lifecycle state model (Draft, Preview, Live, Archived)",
+      "Responsive mobile-friendly management tables and filter bars",
+      "Dedicated SEO metadata and canonical URL control panel",
+      "Audit trail log layout for administrative traceability",
+    ],
+    status: "Under Development",
+    featured: false,
+    isDemoRecord: true,
+    previewUrl: null,
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-14T16:20:00.000Z",
+    updatedAt: "2026-11-24T09:00:00.000Z",
+    seoTitle: "Studio Ops Admin Dashboard",
+    seoDescription:
+      "Enterprise admin dashboard template for product management, enquiry triage, and SEO configuration, under development at THE BHANU.",
+  },
+  {
+    id: "prod-grounded-docs-ai",
+    slug: "grounded-knowledge-assistant-kit",
+    name: "Grounded Knowledge Assistant Kit",
+    shortDescription:
+      "Structured retrieval-augmented AI assistant scaffold with citation grounding, guardrails, and streaming UI.",
+    fullDescription:
+      "Grounded Knowledge Assistant Kit is a practical AI product starter focused on verifiable, citation-backed responses over internal documentation. It emphasizes strict prompt boundaries, schema-validated outputs, and clean streaming feedback rather than open-ended ungrounded chat.",
+    categorySlug: "ai-tools-and-solutions",
+    productType: "AI Solution Starter",
+    thumbnail: {
+      id: "img-ai-1",
+      url: "/marketplace/grounded-ai-overview.svg",
+      alt: "Grounded Knowledge Assistant Kit citation and retrieval UI preview",
+      caption: "Citation-grounded Q&A panel and source inspection drawer",
+    },
+    gallery: [
+      {
+        id: "img-ai-1",
+        url: "/marketplace/grounded-ai-overview.svg",
+        alt: "Grounded Knowledge Assistant Kit citation and retrieval UI preview",
+        caption: "Citation-grounded Q&A panel and source inspection drawer",
+      },
+      {
+        id: "img-ai-2",
+        url: "/marketplace/grounded-ai-pipeline.svg",
+        alt: "Document chunking, vector retrieval, and guardrail pipeline diagram",
+        caption: "Retrieval, verification, and guardrail flow architecture",
+      },
+    ],
+    technologies: ["Next.js", "TypeScript", "AI SDK", "PostgreSQL", "pgvector"],
+    features: [
+      "Inline source citation links for every generated claim",
+      "Structured JSON schema extraction and validation layer",
+      "Configurable rate limiting and PII redaction guardrails",
+      "Responsive split-pane document and assistant interface",
+    ],
+    status: "Coming Soon",
+    featured: false,
+    isDemoRecord: true,
+    previewUrl: null,
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-08T13:10:00.000Z",
+    updatedAt: "2026-11-21T11:45:00.000Z",
+    seoTitle: "Grounded Knowledge Assistant Kit",
+    seoDescription:
+      "Retrieval-augmented AI assistant starter with citation grounding and validation guardrails from THE BHANU.",
+  },
+  {
+    id: "prod-intake-automation-flow",
+    slug: "enquiry-routing-automation-engine",
+    name: "Enquiry & Webhook Automation Engine",
+    shortDescription:
+      "Event-driven workflow system that validates project enquiries, assigns references, and dispatches alerts.",
+    fullDescription:
+      "Built to eliminate manual lead triage, the Enquiry & Webhook Automation Engine handles schema validation, deterministic reference ID generation, webhook signing, and structured notification dispatch. Designed to plug cleanly into Next.js route handlers and Supabase Edge Functions.",
+    categorySlug: "automation-systems",
+    productType: "Automation Workflow",
+    thumbnail: {
+      id: "img-auto-1",
+      url: "/marketplace/automation-engine-overview.svg",
+      alt: "Enquiry and Webhook Automation Engine node pipeline preview",
+      caption: "Validated intake, reference generation, and webhook routing",
+    },
+    gallery: [
+      {
+        id: "img-auto-1",
+        url: "/marketplace/automation-engine-overview.svg",
+        alt: "Enquiry and Webhook Automation Engine node pipeline preview",
+        caption: "Validated intake, reference generation, and webhook routing",
+      },
+    ],
+    technologies: ["TypeScript", "Node.js", "Supabase Edge Functions", "Webhooks"],
+    features: [
+      "Deterministic enquiry reference code generator",
+      "Idempotent webhook delivery with retry backoff pattern",
+      "Strict payload validation and sanitization",
+      "Pluggable email and dashboard notification adapters",
+    ],
+    status: "Available",
+    featured: false,
+    isDemoRecord: true,
+    previewUrl: "/#contact",
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-05T09:00:00.000Z",
+    updatedAt: "2026-11-19T17:30:00.000Z",
+    seoTitle: "Enquiry & Webhook Automation Engine",
+    seoDescription:
+      "Event-driven workflow automation engine for intake validation, reference codes, and webhook routing.",
+  },
+  {
+    id: "prod-nextjs-seo-starter",
+    slug: "nextjs-seo-and-schema-starter-kit",
+    name: "Next.js Technical SEO & Schema Kit",
+    shortDescription:
+      "Developer starter kit for App Router dynamic sitemaps, robots.txt, Open Graph images, and JSON-LD validation.",
+    fullDescription:
+      "A focused developer resource kit compiling production-tested patterns for Next.js App Router SEO: dynamic database-ready XML sitemaps, robots exclusion rules, deterministic ImageResponse Open Graph banners, canonical URL helpers, and typed Schema.org JSON-LD builders.",
+    categorySlug: "developer-resources",
+    productType: "Developer Starter Kit",
+    thumbnail: {
+      id: "img-dev-1",
+      url: "/marketplace/seo-kit-overview.svg",
+      alt: "Next.js Technical SEO & Schema Kit code and metadata preview",
+      caption: "Typed JSON-LD builders, dynamic sitemap, and OG generator",
+    },
+    gallery: [
+      {
+        id: "img-dev-1",
+        url: "/marketplace/seo-kit-overview.svg",
+        alt: "Next.js Technical SEO & Schema Kit code and metadata preview",
+        caption: "Typed JSON-LD builders, dynamic sitemap, and OG generator",
+      },
+      {
+        id: "img-dev-2",
+        url: "/marketplace/seo-kit-audit.svg",
+        alt: "Technical SEO checklist covering canonicals, robots, and semantic landmarks",
+        caption: "Structured metadata and crawlability verification map",
+      },
+    ],
+    technologies: ["Next.js", "TypeScript", "JSON-LD", "Open Graph"],
+    features: [
+      "Type-safe Organization, WebSite, BreadcrumbList, and Product JSON-LD helpers",
+      "Dynamic sitemap.ts and robots.ts exclusion templates",
+      "Edge/static ImageResponse Open Graph card builder",
+      "Zero-runtime-overhead server metadata patterns",
+    ],
+    status: "Available",
+    featured: false,
+    isDemoRecord: true,
+    previewUrl: "/sitemap.xml",
+    liveDemoUrl: null,
+    documentationUrl: null,
+    createdAt: "2026-11-01T10:00:00.000Z",
+    updatedAt: "2026-11-24T14:20:00.000Z",
+    seoTitle: "Next.js Technical SEO & Schema Kit",
+    seoDescription:
+      "Developer resource kit for Next.js App Router dynamic sitemaps, robots.txt, Open Graph cards, and Schema.org JSON-LD.",
+  },
+];

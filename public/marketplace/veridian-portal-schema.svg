@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none">
+  <defs>
+    <linearGradient id="bg-veridian-portal-schema.svg" x1="0" y1="0" x2="800" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#383B34"/>
+      <stop offset="100%" stop-color="#272A23"/>
+    </linearGradient>
+    <radialGradient id="glow-veridian-portal-schema.svg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#A5CE79" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#527B48" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" rx="24" fill="url(#bg-veridian-portal-schema.svg)"/>
+  <path d="M202 0V500 M374 0V500 M546 0V500" stroke="#F4F5EF" stroke-opacity="0.06"/>
+  <circle cx="660" cy="88" r="180" fill="url(#glow-veridian-portal-schema.svg)"/>
+  <rect x="44" y="34" width="712" height="432" rx="26" fill="#41443B" fill-opacity="0.38" stroke="#F4F5EF" stroke-opacity="0.12"/>
+  <circle cx="76" cy="64" r="6" fill="#A5CE79"/>
+  <text x="94" y="69" fill="#A5CE79" font-family="monospace" font-size="13" letter-spacing="1.5">POSTGRESQL + RLS</text>
+  <text x="64" y="102" fill="#F4F5EF" font-family="sans-serif" font-size="24" font-weight="600">Relational Data Blueprint</text>
+  <text x="64" y="124" fill="#D5D8CE" font-family="sans-serif" font-size="14">Normalized Entities &amp; Access Rules</text>
+  
+        <path d="M170 290 C260 290, 270 205, 360 205 C450 205, 450 290, 540 290 L630 290" fill="none" stroke="#A5CE79" stroke-width="3" stroke-opacity="0.65"/>
+        <path d="M170 290 C260 290, 270 375, 360 375 C450 375, 450 290, 540 290" fill="none" stroke="#789B55" stroke-width="3" stroke-opacity="0.65"/>
+        <rect x="86" y="250" width="132" height="80" rx="18" fill="#32362E" stroke="#A5CE79" stroke-opacity="0.55"/>
+        <rect x="334" y="165" width="132" height="80" rx="18" fill="#32362E" stroke="#A5CE79" stroke-opacity="0.45"/>
+        <rect x="334" y="335" width="132" height="80" rx="18" fill="#32362E" stroke="#789B55" stroke-opacity="0.55"/>
+        <rect x="582" y="250" width="132" height="80" rx="18" fill="#527B48" fill-opacity="0.5" stroke="#A5CE79" stroke-opacity="0.75"/>
+      
+</svg>

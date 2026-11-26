@@ -1,26 +1,189 @@
 @import "tailwindcss";
+@import "../styles/theme.css";
+@import "../shaders/threeui.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-brand-forest: var(--color-forest);
+  --color-brand-moss: var(--color-moss);
+  --color-brand-lime: var(--color-lime);
+  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: clip;
+  transition:
+    background-color var(--duration-normal) var(--ease-premium),
+    color var(--duration-normal) var(--ease-premium);
+}
+
+/* Subtle architectural grid overlay */
+.bg-architectural-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@media (min-width: 768px) {
+  :root,
+  [data-theme="light"],
+  [data-theme="dark"] {
+    --glass-blur: 14px;
+  }
+}
+
+/* Reusable Nature-Glass Surface (GPU-composited for 60fps scroll over WebGL) */
+.glass-surface {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass), var(--glass-highlight);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  contain: layout style paint;
+  transform: translateZ(0);
+  transition:
+    background-color var(--duration-normal) var(--ease-premium),
+    border-color var(--duration-normal) var(--ease-premium),
+    transform var(--duration-normal) var(--ease-premium);
+}
+
+.glass-surface-strong {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-elevated), var(--glass-highlight);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* Floating Navbar High-Legibility Glass */
+.navbar-glass {
+  background: rgba(244, 245, 239, 0.9);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass), var(--glass-highlight);
+  backdrop-filter: blur(16px) saturate(1.25);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  contain: layout style paint;
+  transform: translateZ(0);
+  transition:
+    background-color var(--duration-normal) var(--ease-premium),
+    border-color var(--duration-normal) var(--ease-premium),
+    box-shadow var(--duration-normal) var(--ease-premium);
+}
+
+.navbar-glass--scrolled {
+  background: rgba(244, 245, 239, 0.94);
+  box-shadow: var(--shadow-elevated), var(--glass-highlight);
+}
+
+[data-theme="dark"] .navbar-glass {
+  background: rgba(46, 50, 41, 0.87);
+}
+
+[data-theme="dark"] .navbar-glass--scrolled {
+  background: rgba(42, 46, 38, 0.92);
+}
+
+/* Soft Theme-Aware Text Scrim over 3D Living-World Vines */
+.section-text-scrim {
+  position: relative;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(
+    ellipse 85% 95% at 35% 50%,
+    rgba(244, 245, 239, 0.88) 0%,
+    rgba(244, 245, 239, 0.68) 62%,
+    rgba(244, 245, 239, 0) 100%
+  );
+  padding: 0.75rem 1rem;
+  margin: -0.75rem -1rem;
+}
+
+[data-theme="dark"] .section-text-scrim {
+  background: radial-gradient(
+    ellipse 85% 95% at 35% 50%,
+    rgba(56, 59, 52, 0.86) 0%,
+    rgba(56, 59, 52, 0.64) 62%,
+    rgba(56, 59, 52, 0) 100%
+  );
+}
+
+/* Premium GPU-Composited Nature-Tech Skeleton Shimmer */
+@keyframes bhanu-shimmer {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--glass-bg-subtle);
+  border: 1px solid var(--glass-border);
+  contain: layout style paint;
+}
+
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translate3d(-100%, 0, 0);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(165, 206, 121, 0.14) 45%,
+    rgba(244, 245, 239, 0.22) 50%,
+    rgba(165, 206, 121, 0.14) 55%,
+    transparent 100%
+  );
+  animation: bhanu-shimmer 1.65s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .skeleton-shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(120, 155, 85, 0.12) 45%,
+    rgba(165, 206, 121, 0.2) 50%,
+    rgba(120, 155, 85, 0.12) 55%,
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after {
+    animation: none;
+    transform: none;
+    opacity: 0.35;
+  }
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
 }
