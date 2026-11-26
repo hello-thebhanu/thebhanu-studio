@@ -2,24 +2,24 @@
 
 import React, {
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useState,
-  type ReactNode,
 } from "react";
 import {
   AnimatePresence,
+  HTMLMotionProps,
   motion,
+  TargetAndTransition,
   useMotionValue,
   useSpring,
-  type HTMLMotionProps,
-  type TargetAndTransition,
-  type Transition,
 } from "motion/react";
 import useMeasure from "react-use-measure";
+
 import { cn } from "@/lib/utils";
 
-const springConfig = { stiffness: 220, damping: 24, bounce: 0.15 };
+const springConfig = { stiffness: 200, damping: 20, bounce: 0.2 };
 
 interface ExpandableContextType {
   isExpanded: boolean;
@@ -42,9 +42,9 @@ const ExpandableContext = createContext<ExpandableContextType>({
   isExpanded: false,
   toggleExpand: () => {},
   expandDirection: "vertical",
-  expandBehavior: "push",
+  expandBehavior: "replace",
   transitionDuration: 0.3,
-  easeType: "easeInOut",
+  easeType: "easeInOut" as const,
   initialDelay: 0,
 });
 
@@ -79,9 +79,9 @@ const Expandable = React.forwardRef<HTMLDivElement, ExpandableProps>(
       expanded,
       onToggle,
       transitionDuration = 0.3,
-      easeType = "easeInOut",
+      easeType = "easeInOut" as const,
       expandDirection = "vertical",
-      expandBehavior = "push",
+      expandBehavior = "replace",
       initialDelay = 0,
       onExpandStart,
       onExpandEnd,
@@ -89,10 +89,12 @@ const Expandable = React.forwardRef<HTMLDivElement, ExpandableProps>(
       onCollapseEnd,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [isExpandedInternal, setIsExpandedInternal] = useState(false);
+
     const isExpanded = expanded !== undefined ? expanded : isExpandedInternal;
+
     const toggleExpand =
       onToggle || (() => setIsExpandedInternal((prev) => !prev));
 
@@ -132,7 +134,7 @@ const Expandable = React.forwardRef<HTMLDivElement, ExpandableProps>(
         </motion.div>
       </ExpandableContext.Provider>
     );
-  },
+  }
 );
 Expandable.displayName = "Expandable";
 
@@ -149,34 +151,49 @@ const ANIMATION_PRESETS: Record<string, AnimationPreset> = {
     exit: { opacity: 0 },
   },
   "slide-up": {
-    initial: { opacity: 0, y: 16 },
+    initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 16 },
+    exit: { opacity: 0, y: 20 },
   },
   "slide-down": {
-    initial: { opacity: 0, y: -16 },
+    initial: { opacity: 0, y: -20 },
     animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -16 },
+    exit: { opacity: 0, y: -20 },
   },
   "slide-left": {
-    initial: { opacity: 0, x: 16 },
+    initial: { opacity: 0, x: 20 },
     animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: 16 },
+    exit: { opacity: 0, x: 20 },
   },
   "slide-right": {
-    initial: { opacity: 0, x: -16 },
+    initial: { opacity: 0, x: -20 },
     animate: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -16 },
+    exit: { opacity: 0, x: -20 },
   },
   scale: {
-    initial: { opacity: 0, scale: 0.92 },
+    initial: { opacity: 0, scale: 0.8 },
     animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.92 },
+    exit: { opacity: 0, scale: 0.8 },
   },
   rotate: {
-    initial: { opacity: 0, rotate: -6 },
+    initial: { opacity: 0, rotate: -10 },
     animate: { opacity: 1, rotate: 0 },
-    exit: { opacity: 0, rotate: -6 },
+    exit: { opacity: 0, rotate: -10 },
+  },
+  "blur-sm": {
+    initial: { opacity: 0, filter: "blur(4px)" },
+    animate: { opacity: 1, filter: "blur(0px)" },
+    exit: { opacity: 0, filter: "blur(4px)" },
+  },
+  "blur-md": {
+    initial: { opacity: 0, filter: "blur(8px)" },
+    animate: { opacity: 1, filter: "blur(0px)" },
+    exit: { opacity: 0, filter: "blur(8px)" },
+  },
+  "blur-lg": {
+    initial: { opacity: 0, filter: "blur(16px)" },
+    animate: { opacity: 1, filter: "blur(0px)" },
+    exit: { opacity: 0, filter: "blur(16px)" },
   },
 };
 
@@ -184,13 +201,12 @@ interface AnimationProps {
   initial?: TargetAndTransition;
   animate?: TargetAndTransition;
   exit?: TargetAndTransition;
-  transition?: Transition;
 }
 
 const getAnimationProps = (
   preset: keyof typeof ANIMATION_PRESETS | undefined,
   animateIn?: AnimationProps,
-  animateOut?: AnimationProps,
+  animateOut?: AnimationProps
 ) => {
   const defaultAnimation: AnimationPreset = {
     initial: {},
@@ -222,15 +238,15 @@ const ExpandableContent = React.forwardRef<
   (
     {
       children,
-      preset = "fade",
+      preset,
       animateIn,
       animateOut,
       stagger = false,
-      staggerChildren = 0.06,
+      staggerChildren = 0.1,
       keepMounted = false,
       ...props
     },
-    ref,
+    ref
   ) => {
     const { isExpanded, transitionDuration, easeType } = useExpandable();
     const [measureRef, { height: measuredHeight }] = useMeasure();
@@ -272,7 +288,7 @@ const ExpandableContent = React.forwardRef<
                     hidden: {},
                     visible: {
                       transition: {
-                        staggerChildren,
+                        staggerChildren: staggerChildren,
                       },
                     },
                   }}
@@ -283,7 +299,7 @@ const ExpandableContent = React.forwardRef<
                     <motion.div
                       key={index}
                       variants={{
-                        hidden: { opacity: 0, y: 12 },
+                        hidden: { opacity: 0, y: 20 },
                         visible: { opacity: 1, y: 0 },
                       }}
                     >
@@ -299,7 +315,7 @@ const ExpandableContent = React.forwardRef<
         </AnimatePresence>
       </motion.div>
     );
-  },
+  }
 );
 ExpandableContent.displayName = "ExpandableContent";
 
@@ -324,7 +340,7 @@ const ExpandableCard = React.forwardRef<HTMLDivElement, ExpandableCardProps>(
       expandDelay = 0,
       collapseDelay = 0,
     },
-    ref,
+    ref
   ) => {
     const { isExpanded, toggleExpand, expandDirection } = useExpandable();
     const [measureRef, { width, height }] = useMeasure();
@@ -373,10 +389,14 @@ const ExpandableCard = React.forwardRef<HTMLDivElement, ExpandableCardProps>(
       }
     };
 
+    const usesExplicitHeight = Boolean(
+      collapsedSize?.height !== undefined || expandedSize?.height !== undefined
+    );
+
     return (
       <motion.div
         ref={ref}
-        className={cn("w-full", className)}
+        className={cn("w-full cursor-pointer", className)}
         style={{
           width:
             expandDirection === "vertical"
@@ -385,9 +405,9 @@ const ExpandableCard = React.forwardRef<HTMLDivElement, ExpandableCardProps>(
           height:
             expandDirection === "horizontal"
               ? collapsedSize?.height
-              : height > 0
+              : usesExplicitHeight
                 ? smoothHeight
-                : undefined,
+                : "auto",
         }}
         transition={springConfig}
         onHoverStart={handleHover}
@@ -395,20 +415,27 @@ const ExpandableCard = React.forwardRef<HTMLDivElement, ExpandableCardProps>(
       >
         <div
           className={cn(
-            "glass-surface w-full overflow-hidden rounded-[var(--radius-lg)] transition-colors duration-300",
-            isExpanded
-              ? "border-[var(--glass-border-accent)] shadow-[var(--shadow-elevated)]"
-              : "hover:border-[var(--glass-border-strong)]",
+            "grid grid-cols-1 rounded-2xl md:rounded-[1.75rem]",
+            "border border-[var(--glass-border)]",
+            "mx-auto w-full transition-all duration-300 ease-in-out",
+            isExpanded && "border-[var(--glass-border-accent)]"
           )}
         >
-          <div ref={measureRef} className="flex w-full flex-col">
-            {children}
+          <div className="grid grid-cols-1 rounded-2xl p-1 md:rounded-[1.75rem] md:p-1.5">
+            <div className="glass-surface rounded-xl p-1 shadow-xl sm:rounded-2xl">
+              <div className="h-full w-full">
+                <div ref={measureRef} className="flex h-full flex-col">
+                  {children}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
     );
-  },
+  }
 );
+
 ExpandableCard.displayName = "ExpandableCard";
 
 const ExpandableTrigger = React.forwardRef<
@@ -439,6 +466,7 @@ const ExpandableTrigger = React.forwardRef<
     </div>
   );
 });
+
 ExpandableTrigger.displayName = "ExpandableTrigger";
 
 const ExpandableCardHeader = React.forwardRef<
@@ -447,14 +475,15 @@ const ExpandableCardHeader = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-5 pb-3", className)}
+    className={cn("flex flex-col space-y-1.5 p-6", className)}
     {...props}
   >
-    <motion.div layout className="flex items-start justify-between gap-3">
+    <motion.div layout className="flex items-start justify-between">
       {children}
     </motion.div>
   </div>
 ));
+
 ExpandableCardHeader.displayName = "ExpandableCardHeader";
 
 const ExpandableCardContent = React.forwardRef<
@@ -463,7 +492,7 @@ const ExpandableCardContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex-grow overflow-hidden px-5 pb-3", className)}
+    className={cn("flex-grow overflow-hidden p-6 px-4 pt-0", className)}
     {...props}
   >
     <motion.div layout>{children}</motion.div>
@@ -477,7 +506,7 @@ const ExpandableCardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center px-5 pb-5 pt-2", className)}
+    className={cn("flex items-center p-4 pt-0", className)}
     {...props}
   />
 ));
