@@ -1,17 +1,8 @@
-"use client";
-
-import Link from "next/link";
-import { ArrowUpRight, Box, ChevronDown, Clock } from "lucide-react";
+import { Box, Clock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SylvaReveal } from "@/components/ui/SylvaReveal";
-import {
-  Expandable,
-  ExpandableCard,
-  ExpandableContent,
-  ExpandableTrigger,
-} from "@/components/ui/expandable";
 import { MARKETPLACE_TRACKS_PREVIEW } from "@/lib/constants";
 
 export function ProductsPreview() {
@@ -31,64 +22,48 @@ export function ProductsPreview() {
               description="Templates, UI systems, full-stack starters and AI tools, built to ship and ready to adapt."
             />
 
-            <div className="inline-flex w-fit shrink-0 items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--glass-border-accent)] bg-[var(--bg-elevated)]/90 px-4 py-2 font-mono text-xs font-medium text-[var(--accent-primary)] shadow-sm">
+            <div className="inline-flex w-fit shrink-0 items-center gap-2 rounded-[var(--radius-pill)] border border-[var(--glass-border-accent)] bg-[var(--bg-elevated)]/90 px-4 py-2 font-mono text-xs font-medium text-[var(--accent-primary)] shadow-sm backdrop-blur-sm">
               <Clock className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Sample catalogue live</span>
             </div>
           </div>
         </SylvaReveal>
 
-        {/* Expandable Product Track Preview Grid */}
-        <div className="mt-10 grid grid-cols-1 items-start gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Transparent Placeholder Preview Grid (no fabricated product claims) */}
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {MARKETPLACE_TRACKS_PREVIEW.map((track, index) => (
             <SylvaReveal
               key={track.id}
               delay={Math.min(index * 0.08, 0.28)}
-              className="w-full"
+              className="h-full"
             >
-              <Expandable expandDirection="vertical" transitionDuration={0.3}>
-                {({ isExpanded }) => (
-                  <ExpandableCard className="w-full">
-                    <article className="flex flex-col p-6">
-                      <ExpandableTrigger className="text-left">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg-subtle)] text-[var(--accent-primary)]">
-                            <Box className="h-4 w-4" aria-hidden="true" />
-                          </span>
-                          <ChevronDown
-                            className={`h-4 w-4 text-[var(--text-muted)] transition-transform duration-300 ${
-                              isExpanded ? "rotate-180 text-[var(--accent-primary)]" : ""
-                            }`}
-                            aria-hidden="true"
-                          />
-                        </div>
+              <GlassCard
+                as="article"
+                interactive
+                className="flex h-full flex-col justify-between border-dashed p-6"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg-subtle)] text-[var(--accent-primary)]">
+                      <Box className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <span className="rounded-[var(--radius-pill)] border border-[var(--glass-border)] bg-[var(--glass-bg-subtle)] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+                      Coming Soon
+                    </span>
+                  </div>
 
-                        <h3 className="mt-5 text-base font-semibold text-[var(--text-primary)]">
-                          {track.category}
-                        </h3>
-                        <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
-                          {track.summary}
-                        </p>
-                      </ExpandableTrigger>
+                  <h3 className="mt-5 text-base font-semibold text-[var(--text-primary)]">
+                    {track.category}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+                    {track.summary}
+                  </p>
+                </div>
 
-                      <ExpandableContent preset="fade" stagger>
-                        <div className="mt-5 flex flex-col gap-3 border-t border-[var(--glass-border)] pt-3">
-                          <span className="font-mono text-[11px] text-[var(--accent-primary)]">
-                            {track.plannedPhase}
-                          </span>
-                          <Link
-                            href="/marketplace"
-                            className="inline-flex items-center justify-between rounded-[var(--radius-pill)] border border-[var(--glass-border-accent)] bg-[var(--accent-soft)] px-3.5 py-2 text-xs font-medium text-[var(--accent-primary)] hover:bg-[#527B48] hover:text-white"
-                          >
-                            <span>Browse Track</span>
-                            <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-                          </Link>
-                        </div>
-                      </ExpandableContent>
-                    </article>
-                  </ExpandableCard>
-                )}
-              </Expandable>
+                <div className="mt-6 border-t border-[var(--glass-border)] pt-3 font-mono text-[11px] text-[var(--accent-primary)]">
+                  {track.plannedPhase}
+                </div>
+              </GlassCard>
             </SylvaReveal>
           ))}
         </div>
