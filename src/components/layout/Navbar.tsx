@@ -1,13 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, Menu, User, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  Blocks,
+  FolderKanban,
+  Home,
+  Info,
+  Layers,
+  Mail,
+  Package,
+  User,
+} from "lucide-react";
 import { NAV_ITEMS, SITE_CONFIG } from "@/lib/constants";
 import { NavCartButton } from "@/components/cart/NavCartButton";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/Button";
+import {
+  IconNavbarMenu,
+  type IconNavItem,
+} from "@/components/ui/navbar-menu";
+
+const ICON_BY_HREF: Record<string, IconNavItem["icon"]> = {
+  "/#top": Home,
+  "/#services": Layers,
+  "/marketplace": Package,
+  "/components": Blocks,
+  "/#projects": FolderKanban,
+  "/#about": Info,
+  "/#contact": Mail,
+};
 
 export function BrandMark() {
   return (
@@ -26,21 +50,39 @@ export function Navbar() {
   const isMarketplaceRoute =
     pathname.startsWith("/marketplace") || pathname.startsWith("/products");
   const isComponentsRoute = pathname.startsWith("/components");
-  const [mobileOpen, setMobileOpen] = useState(false);
+
   const [scrolled, setScrolled] = useState(false);
-  const [activeHash, setActiveHash] = useState("#top");
+  const [expandedHref, setExpandedHref] = useState<string | null>(null);
   const [authUser, setAuthUser] = useState<{
     email: string;
     role: "admin" | "customer";
   } | null>(null);
 
+  const iconNavItems = useMemo<IconNavItem[]>(
+    () =>
+      NAV_ITEMS.map((item) => ({
+        label: item.label,
+        href: item.href,
+        icon: ICON_BY_HREF[item.href] ?? Home,
+      })),
+    [],
+  );
+
+  const routeActiveHref = isMarketplaceRoute
+    ? "/marketplace"
+    : isComponentsRoute
+      ? "/components"
+      : null;
+
   useEffect(() => {
     let active = true;
     fetch("/api/auth/me")
       .then((res) => (res.ok ? res.json() : { user: null }))
-      .then((data: { user?: { email: string; role: "admin" | "customer" } | null }) => {
-        if (active) setAuthUser(data.user ?? null);
-      })
+      .then(
+        (data: { user?: { email: string; role: "admin" | "customer" } | null }) => {
+          if (active) setAuthUser(data.user ?? null);
+        },
+      )
       .catch(() => {
         if (active) setAuthUser(null);
       });
@@ -58,111 +100,71 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Scroll-spy runs on the homepage only
-  useEffect(() => {
-    if (!isHome) return;
-
-    const sectionIds = ["top", "services", "products", "projects", "about", "contact"];
-    const updateActiveSection = () => {
-      const scrollMarker = window.scrollY + 140;
-      let current = "#top";
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.getBoundingClientRect().top + window.scrollY;
-          if (scrollMarker >= top) {
-            current = `#${id}`;
-          }
-        }
-      }
-      setActiveHash(current);
-    };
-
-    updateActiveSection();
-    window.addEventListener("scroll", updateActiveSection, { passive: true });
-    window.addEventListener("hashchange", updateActiveSection);
-    return () => {
-      window.removeEventListener("scroll", updateActiveSection);
-      window.removeEventListener("hashchange", updateActiveSection);
-    };
-  }, [isHome]);
-
-  const isNavItemActive = (href: string) => {
-    if (isMarketplaceRoute) {
-      return href === "/marketplace";
-    }
-    if (isComponentsRoute) {
-      return href === "/components";
-    }
-    if (isHome) {
-      return href === `/${activeHash}`;
-    }
-    return false;
+  const handleSelect = (item: IconNavItem) => {
+    setExpandedHref(item.href);
   };
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMobileOpen(false);
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
 
   return (
     <header
       className={`${
         isHome ? "fixed top-0 right-0 left-0" : "sticky top-0"
-      } z-50 w-full px-4 pt-3 sm:px-6 lg:px-8`}
+      } z-50 w-full px-3 pt-3 sm:px-6 lg:px-8`}
     >
       <div className="mx-auto max-w-[var(--container-max)]">
-        <nav
-          aria-label="Primary navigation"
-          className={`navbar-glass flex items-center justify-between gap-3 rounded-[var(--radius-pill)] px-3.5 py-2.5 sm:px-5 ${
+        <div
+          className={`navbar-glass flex flex-col gap-2 rounded-[26px] px-3.5 py-2.5 lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:rounded-[var(--radius-pill)] lg:px-5 ${
             scrolled ? "navbar-glass--scrolled" : ""
           }`}
         >
-          {/* Brand Identity */}
-          <Link
-            href="#top"
-            className="flex items-center gap-2.5 rounded-full pr-2 focus-visible:outline-2"
-            onClick={() => setMobileOpen(false)}
-          >
-            <BrandMark />
-            <div className="flex flex-col leading-none">
-              <span className="text-sm font-bold tracking-[0.12em] text-[var(--text-primary)] sm:text-base">
-                {SITE_CONFIG.brandName}
-              </span>
-              <span className="hidden font-mono text-[10px] tracking-wider text-[var(--text-muted)] sm:block">
-                DIGITAL STUDIO
-              </span>
+          {/* Top Row: Brand + Mobile Actions */}
+          <div className="flex items-center justify-between gap-2">
+            <Link
+              href="/#top"
+              onClick={() => setExpandedHref(null)}
+              className="flex items-center gap-2.5 rounded-full pr-2 focus-visible:outline-2"
+            >
+              <BrandMark />
+              <div className="flex flex-col leading-none">
+                <span className="text-sm font-bold tracking-[0.12em] text-[var(--text-primary)] sm:text-base">
+                  {SITE_CONFIG.brandName}
+                </span>
+                <span className="hidden font-mono text-[10px] tracking-wider text-[var(--text-muted)] sm:block">
+                  DIGITAL STUDIO
+                </span>
+              </div>
+            </Link>
+
+            {/* Mobile / Tablet Quick Actions (Cart remains separate like native) */}
+            <div className="flex items-center gap-1.5 lg:hidden">
+              <ThemeToggle />
+              <NavCartButton />
+              <Link
+                href={authUser ? "/account" : "/login"}
+                aria-label={authUser ? "Account" : "Sign In"}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
+              >
+                <User className="h-4 w-4 text-[var(--accent-primary)]" aria-hidden="true" />
+              </Link>
+              <Button href="/custom-studio" variant="primary" size="sm">
+                <span className="hidden sm:inline">Build Solution</span>
+                <span className="sm:hidden">Build</span>
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </Button>
             </div>
-          </Link>
+          </div>
 
-          {/* Desktop Navigation Links */}
-          <ul className="hidden items-center gap-1 lg:flex">
-            {NAV_ITEMS.map((item) => {
-              const active = isNavItemActive(item.href);
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={`inline-flex min-h-9 items-center rounded-[var(--radius-pill)] border px-3.5 py-1.5 text-sm transition-colors ${
-                      active
-                        ? "border-[var(--glass-border-accent)] bg-[var(--accent-soft)] font-semibold text-[var(--accent-primary)]"
-                        : "border-transparent font-medium text-[var(--text-secondary)] hover:bg-[var(--accent-soft)] hover:text-[var(--text-primary)]"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          {/* Center: Icon-Only Animated Navbar (labels hidden until clicked) */}
+          <div className="flex w-full justify-center overflow-x-auto lg:w-auto lg:overflow-visible">
+            <IconNavbarMenu
+              items={iconNavItems}
+              activeHref={expandedHref}
+              routeActiveHref={routeActiveHref}
+              onSelect={handleSelect}
+              className="max-w-full"
+            />
+          </div>
 
-          {/* Desktop Actions */}
+          {/* Desktop Right Actions */}
           <div className="hidden items-center gap-2 lg:flex">
             <ThemeToggle />
             <NavCartButton />
@@ -178,89 +180,7 @@ export function Navbar() {
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
-
-          {/* Mobile Controls (Cart stays separate outside menu like native) */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <ThemeToggle />
-            <NavCartButton />
-            <button
-              type="button"
-              onClick={() => setMobileOpen((prev) => !prev)}
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-navigation-drawer"
-              aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg-subtle)] text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)] cursor-pointer"
-            >
-              {mobileOpen ? (
-                <X className="h-5 w-5" aria-hidden="true" />
-              ) : (
-                <Menu className="h-5 w-5" aria-hidden="true" />
-              )}
-            </button>
-          </div>
-        </nav>
-
-        {/* Mobile Menu Panel */}
-        {mobileOpen ? (
-          <div
-            id="mobile-navigation-drawer"
-            className="navbar-glass navbar-glass--scrolled mt-2.5 rounded-[var(--radius-lg)] p-4 lg:hidden"
-          >
-            <ul className="flex flex-col gap-1">
-              {NAV_ITEMS.map((item) => {
-                const active = isNavItemActive(item.href);
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      aria-current={active ? "page" : undefined}
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex min-h-11 items-center justify-between rounded-[var(--radius-md)] px-3.5 py-2.5 text-base transition-colors ${
-                        active
-                          ? "bg-[var(--accent-soft)] font-semibold text-[var(--accent-primary)]"
-                          : "font-medium text-[var(--text-primary)] hover:bg-[var(--accent-soft)]"
-                      }`}
-                    >
-                      <span>{item.label}</span>
-                      <ArrowUpRight
-                        className={`h-4 w-4 ${active ? "text-[var(--accent-primary)]" : "text-[var(--text-muted)]"}`}
-                        aria-hidden="true"
-                      />
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="mt-4 flex flex-col gap-3 border-t border-[var(--glass-border)] pt-4">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-medium text-[var(--text-muted)]">
-                  Appearance
-                </span>
-                <ThemeToggle showLabels />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href={authUser ? "/account" : "/login"}
-                  onClick={() => setMobileOpen(false)}
-                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-4 text-sm font-medium text-[var(--text-primary)]"
-                >
-                  <User className="h-4 w-4 text-[var(--accent-primary)]" aria-hidden="true" />
-                  <span>{authUser ? "My Account" : "Sign In / Sign Up"}</span>
-                </Link>
-              </div>
-              <Button
-                href="/custom-studio"
-                variant="primary"
-                size="md"
-                className="w-full"
-                onClick={() => setMobileOpen(false)}
-              >
-                <span>Build Your Solution</span>
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </Button>
-            </div>
-          </div>
-        ) : null}
+        </div>
       </div>
     </header>
   );
