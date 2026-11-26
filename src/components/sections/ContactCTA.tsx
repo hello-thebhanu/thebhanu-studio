@@ -17,7 +17,7 @@ export function ContactCTA() {
             {/* Subtle Moss-Green Corner Ambient Light */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(120,155,85,0.28)_0%,transparent_70%)] blur-2xl"
+              className="pointer-events-none absolute -top-24 -right-24 hidden h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(120,155,85,0.28)_0%,transparent_70%)] sm:block sm:blur-2xl"
             />
 
             <div className="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">

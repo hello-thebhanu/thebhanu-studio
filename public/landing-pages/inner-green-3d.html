@@ -525,11 +525,11 @@
     .guides i:nth-child(2){ left:calc(506 * var(--u)) !important; }
 
     .knob-float{ left:calc(644 * var(--u)); top:calc(1218 * var(--u)); transform-origin:calc(-264 * var(--u)) calc(-43 * var(--u)); }
-    .headline{ left:calc(34 * var(--u)); top:max(84px, calc(134 * var(--u))); font-size:calc(62 * var(--u)); line-height:calc(66 * var(--u)); }
-    .lede{ left:calc(34 * var(--u)); top:max(176px, calc(304 * var(--u))); width:calc(400 * var(--u)); font-size:calc(19 * var(--u)); line-height:calc(27 * var(--u)); }
+    .headline{ left:calc(34 * var(--u)); top:max(138px, calc(206 * var(--u))); font-size:calc(62 * var(--u)); line-height:calc(66 * var(--u)); }
+    .lede{ left:calc(34 * var(--u)); top:max(226px, calc(372 * var(--u))); width:calc(460 * var(--u)); font-size:calc(19 * var(--u)); line-height:calc(27 * var(--u)); }
     /* one column: the frame keeps its aspect, re-anchored to the left rail */
     .pill-clip{
-      left:calc(34 * var(--u)); top:max(246px, calc(450 * var(--u)));
+      left:calc(34 * var(--u)); top:max(326px, calc(526 * var(--u)));
       width:calc(506 * var(--u)); height:calc(334 * var(--u));
       margin:calc(-167 * var(--u)) 0 0 calc(-79 * var(--u));
       clip-path:inset(calc(93 * var(--u)) calc(74 * var(--u)) calc(1 * var(--u)) calc(74 * var(--u)) round calc(76 * var(--u)));
@@ -541,8 +541,8 @@
     .stat .mark{ width:calc(36 * var(--u)); height:calc(36 * var(--u)); }
     .stat dt{ font-size:calc(16 * var(--u)); line-height:calc(22 * var(--u)); }
     .stat dd{ font-size:calc(16.5 * var(--u)); line-height:calc(24 * var(--u)); }
-    .stat--a{ left:calc(34 * var(--u));  top:max(284px, calc(556 * var(--u))); }
-    .stat--b{ left:calc(396 * var(--u)); top:max(284px, calc(556 * var(--u))); }
+    .stat--a{ left:calc(34 * var(--u));  top:max(404px, calc(656 * var(--u))); }
+    .stat--b{ left:calc(396 * var(--u)); top:max(404px, calc(656 * var(--u))); }
 
     .card{ border-radius:calc(40 * var(--u)); }
     .card--about{ left:calc(34 * var(--u)); top:calc(1050 * var(--u)); width:calc(692 * var(--u)); height:calc(250 * var(--u)); }
@@ -1542,28 +1542,56 @@ window.__seek   = v => { clock = v; drawn = null; };
   var pointer = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
   var heroEl = document.getElementById('hero');
   var lastX = null, lastY = null;
-  var ticking = false, parOn = false;
+  var ticking = false, parOn = false, sceneVisible = true, rafLoopId = 0;
 
-  /* one rAF for the whole page: it eases the pointer, publishes it, and
-     renders the GL scene if there is one */
+  /* Pause WebGL & parallax RAF loops completely when scrolled offscreen or tab hidden */
   function startTick() {
-    if (ticking) return;
+    if (ticking || !sceneVisible || document.hidden) return;
     ticking = true;
-    (function loop() { requestAnimationFrame(loop); tick(); })();
+    (function loop() {
+      if (!sceneVisible || document.hidden) {
+        ticking = false;
+        rafLoopId = 0;
+        return;
+      }
+      rafLoopId = requestAnimationFrame(loop);
+      tick();
+    })();
   }
 
-  var lastTick = 0;
+  window.addEventListener('message', function (ev) {
+    if (ev.data && ev.data.type === 'thebhanu-visibility') {
+      sceneVisible = Boolean(ev.data.visible);
+      if (sceneVisible && !document.hidden) {
+        if (clock) clock.getDelta();
+        startTick();
+      } else if (rafLoopId) {
+        cancelAnimationFrame(rafLoopId);
+        rafLoopId = 0;
+        ticking = false;
+      }
+    }
+  });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      if (rafLoopId) {
+        cancelAnimationFrame(rafLoopId);
+        rafLoopId = 0;
+        ticking = false;
+      }
+    } else if (sceneVisible) {
+      if (clock) clock.getDelta();
+      startTick();
+    }
+  });
+
+  var lastTick = 0, lastMobileGl = 0;
   function tick() {
     var now = performance.now();
-    void now;
-    void lastTick;
     lastTick = now;
     if (parOn) {
       smooth.x += (pointer.x - smooth.x) * 0.055;
       smooth.y += (pointer.y - smooth.y) * 0.055;
-      /* three decimals is finer than a pixel of travel, and rounding lets the
-         writes stop entirely once the pointer settles — no style invalidation
-         on an idle page */
       var nx = Math.round(smooth.x * 1000) / 1000, ny = Math.round(smooth.y * 1000) / 1000;
       if (nx !== lastX || ny !== lastY) {
         lastX = nx; lastY = ny;
@@ -1571,7 +1599,11 @@ window.__seek   = v => { clock = v; drawn = null; };
         heroEl.style.setProperty('--py', ny);
       }
     }
-    if (renderer && clock) renderFrame();
+    if (renderer && clock) {
+      if (NARROW.matches && now - lastMobileGl < 32) return;
+      lastMobileGl = now;
+      renderFrame();
+    }
   }
 
   function startParallax() {
@@ -3015,15 +3047,25 @@ window.__seek   = v => { clock = v; drawn = null; };
   function build() {
     var narrow = NARROW.matches;
     var small = narrow || (window.innerWidth * window.innerHeight) < 620000;
-    var BLADES_NEAR = small ? 70000 : 190000;
-    var BLADES_FAR  = small ? 20000 :  60000;
+    var lowTier = small && ((navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4));
+    var BLADES_NEAR = lowTier ? 2500 : (small ? 4500 : 190000);
+    var BLADES_FAR  = lowTier ? 800  : (small ? 1500 : 60000);
 
     var q = /[?&]blades=(\d+)/.exec(location.search);
     if (q) { BLADES_NEAR = +q[1]; BLADES_FAR = Math.round(+q[1] * 0.21); }
 
-    renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: !small });
+    canvas.addEventListener('webglcontextlost', function (e) {
+      e.preventDefault();
+      sceneVisible = false;
+    }, false);
+
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: !small, powerPreference: 'high-performance' });
+    } catch (e) {
+      return;
+    }
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.6 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1 : 1.75));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.30;
     if ('sRGBEncoding' in THREE) renderer.outputEncoding = THREE.sRGBEncoding;
@@ -3038,7 +3080,8 @@ window.__seek   = v => { clock = v; drawn = null; };
     /* a scatter of stubby offshoots, so the tubes never read as hoses */
     var hp = new THREE.Vector3(), hn = new THREE.Vector3();
     var extra = [];
-    for (var i = 0; i < 14; i++) {
+    var extraCount = small ? 6 : 14;
+    for (var i = 0; i < extraCount; i++) {
       var r = rng();
       var src = nearLimbs[r < 0.62 ? 0 : (r < 0.82 ? 1 : 2)];
       var t = rand(0.04, 0.96), th = rng() * TAU;
@@ -3055,8 +3098,8 @@ window.__seek   = v => { clock = v; drawn = null; };
 
     nearGroup = assembleRoot(nearLimbs, {
       aspect: ARCH.aspect, haze: 0.15, fog: 0.0, alpha: 1.0, order: 2,
-      blades: BLADES_NEAR, ferns: small ? 26 : 46, flowers: small ? 120 : 260,
-      fernSize: [0.22, 0.50], flowerSize: [0.055, 0.118], mainLimbs: mainCount, wire: true,
+      blades: BLADES_NEAR, ferns: small ? 14 : 46, flowers: small ? 48 : 260,
+      fernSize: [0.22, 0.50], flowerSize: [0.055, 0.118], mainLimbs: mainCount, wire: !small,
       mouse: uMouseNear, mouseR: 1.20
     });
     scene.add(nearGroup);
@@ -3930,10 +3973,18 @@ window.__seek   = v => { clock = v; drawn = null; };
      the first wipe paints leaves the whole intro frozen on its opening
      frame — so hand the browser two frames to start animating. */
   ready();
-  requestAnimationFrame(function () { requestAnimationFrame(function () {
+  var runBuild = function () {
     try { build(); }
     catch (err) { console.error(err); }
-  }); });
+  };
+  if (NARROW.matches) {
+    setTimeout(function () {
+      if (window.requestIdleCallback) window.requestIdleCallback(runBuild, { timeout: 1200 });
+      else runBuild();
+    }, 350);
+  } else {
+    requestAnimationFrame(function () { requestAnimationFrame(runBuild); });
+  }
 
   /* never leave the page invisible if something stalls */
   setTimeout(ready, 4000);

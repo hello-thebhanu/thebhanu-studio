@@ -130,7 +130,39 @@ export function LandingPageFrame({
 }: LandingPageFrameProps) {
   const [ready, setReady] = useState(false);
   const [frameHeight, setFrameHeight] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const visibleRef = useRef(true);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const postVisibility = () => {
+      const active = visibleRef.current && !document.hidden;
+      frameRef.current?.contentWindow?.postMessage(
+        { type: "thebhanu-visibility", visible: active },
+        "*",
+      );
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        visibleRef.current = Boolean(entries[0]?.isIntersecting);
+        postVisibility();
+      },
+      { threshold: 0.02 },
+    );
+    observer.observe(el);
+
+    const onVisChange = () => postVisibility();
+    document.addEventListener("visibilitychange", onVisChange);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisChange);
+    };
+  }, []);
 
   useEffect(() => {
     applyPageCustomization(frameRef.current, customization);
@@ -175,6 +207,7 @@ export function LandingPageFrame({
 
   return (
     <div
+      ref={containerRef}
       className={`threeui-background landing-page-frame${className ? ` ${className}` : ""}`}
       data-state={ready ? "ready" : "loading"}
       style={{
@@ -182,6 +215,7 @@ export function LandingPageFrame({
         overflow: "hidden",
         background: "#383b34",
         contain: "layout style paint",
+        touchAction: "pan-y",
         pointerEvents: "auto",
         height: frameHeight ? `${frameHeight}px` : undefined,
         ...style,

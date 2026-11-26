@@ -82,6 +82,21 @@ export function LivingWorldBackdrop({ containerRef }: LivingWorldBackdropProps) 
         if (disposed || !THREE || !canvasRef.current || !containerRef.current) return;
 
         const isMobile = window.matchMedia("(max-width: 767px)").matches;
+        const lowTierMobile =
+          isMobile &&
+          ((navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+            ((navigator as unknown as { deviceMemory?: number }).deviceMemory !== undefined &&
+              (navigator as unknown as { deviceMemory?: number }).deviceMemory! <= 4));
+
+        const handleContextLost = (e: Event) => {
+          e.preventDefault();
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = 0;
+          }
+        };
+        canvas.addEventListener("webglcontextlost", handleContextLost, false);
+
         let renderer: ThreeGlobal;
         try {
           renderer = new THREE.WebGLRenderer({
@@ -890,7 +905,9 @@ export function LivingWorldBackdrop({ containerRef }: LivingWorldBackdropProps) 
       };
 
       renderOnce(0.016, 0.4);
-      startLoopFn();
+      if (!lowTierMobile) {
+        startLoopFn();
+      }
 
       const originalDispose = cleanupListeners;
       cleanupListeners = () => {

@@ -5,7 +5,7 @@ export function HeroSection() {
     <section
       id="top"
       aria-label="THE BHANU Studio Introduction"
-      className="relative h-[213.82vw] w-full overflow-hidden bg-[#383b34] min-[901px]:h-[100svh] min-[901px]:min-h-[max(55vw,620px)] min-[901px]:max-h-[1120px]"
+      className="relative h-[213.82vw] min-h-[680px] w-full touch-pan-y overflow-hidden bg-[#383b34] min-[901px]:h-[100svh] min-[901px]:min-h-[max(55vw,620px)] min-[901px]:max-h-[1120px]"
     >
       <SylvaHero
         variant="living-green"
