@@ -6,6 +6,7 @@ import { CartProvider } from "@/components/cart/CartProvider";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingSearchBar } from "@/components/layout/FloatingSearchBar";
 import { Navbar } from "@/components/layout/Navbar";
+import { SocialDock } from "@/components/layout/SocialDock";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SITE_CONFIG } from "@/lib/constants";
 import "./globals.css";
@@ -135,6 +136,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main id="main-content" className="flex-1">
               {children}
             </main>
+            <SocialDock />
             <Footer />
             <FloatingSearchBar />
           </CartProvider>
