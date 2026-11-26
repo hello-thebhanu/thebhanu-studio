@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { CartProvider } from "@/components/cart/CartProvider";
 import { Footer } from "@/components/layout/Footer";
+import { FloatingSearchBar } from "@/components/layout/FloatingSearchBar";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SITE_CONFIG } from "@/lib/constants";
@@ -121,18 +123,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
 
         <ThemeProvider>
-          <Suspense fallback={null}>
-            <GoogleAnalytics
-              measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}
-            />
-          </Suspense>
-          <Suspense fallback={<div className="h-20" aria-hidden="true" />}>
-            <Navbar />
-          </Suspense>
-          <main id="main-content" className="flex-1">
-            {children}
-          </main>
-          <Footer />
+          <CartProvider>
+            <Suspense fallback={null}>
+              <GoogleAnalytics
+                measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}
+              />
+            </Suspense>
+            <Suspense fallback={<div className="h-20" aria-hidden="true" />}>
+              <Navbar />
+            </Suspense>
+            <main id="main-content" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <FloatingSearchBar />
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>

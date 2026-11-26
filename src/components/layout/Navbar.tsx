@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Menu, User, X } from "lucide-react";
 import { NAV_ITEMS, SITE_CONFIG } from "@/lib/constants";
+import { NavCartButton } from "@/components/cart/NavCartButton";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/Button";
 
@@ -164,6 +165,7 @@ export function Navbar() {
           {/* Desktop Actions */}
           <div className="hidden items-center gap-2 lg:flex">
             <ThemeToggle />
+            <NavCartButton />
             <Link
               href={authUser ? "/account" : "/login"}
               className="inline-flex min-h-9 items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-3.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
@@ -177,9 +179,10 @@ export function Navbar() {
             </Button>
           </div>
 
-          {/* Mobile Controls */}
+          {/* Mobile Controls (Cart stays separate outside menu like native) */}
           <div className="flex items-center gap-2 lg:hidden">
             <ThemeToggle />
+            <NavCartButton />
             <button
               type="button"
               onClick={() => setMobileOpen((prev) => !prev)}
