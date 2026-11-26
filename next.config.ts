@@ -14,6 +14,15 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL:
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL ?? "",
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+      process.env.SUPABASE_PUBLISHABLE_KEY ??
+      "",
+  },
   async headers() {
     return [
       {

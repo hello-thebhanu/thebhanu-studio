@@ -1,11 +1,32 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Box, Clock } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import {
+  buildLoginRedirectUrl,
+  showAuthToast,
+} from "@/components/auth/AuthToast";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SylvaReveal } from "@/components/ui/SylvaReveal";
+import { useAuthSession } from "@/hooks/useAuthSession";
 import { MARKETPLACE_TRACKS_PREVIEW } from "@/lib/constants";
 
 export function ProductsPreview() {
+  const router = useRouter();
+  const { user, loading } = useAuthSession();
+
+  const handleGatedClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    path: string,
+  ) => {
+    if (!loading && !user) {
+      e.preventDefault();
+      showAuthToast("Please sign in to continue");
+      router.push(buildLoginRedirectUrl(path));
+    }
+  };
   return (
     <section
       id="products"
@@ -80,12 +101,20 @@ export function ProductsPreview() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3 shrink-0">
-              <Button href="/marketplace" variant="primary" size="sm">
+              <Link
+                href="/marketplace"
+                onClick={(e) => handleGatedClick(e, "/marketplace")}
+                className="inline-flex min-h-10 items-center justify-center rounded-[var(--radius-pill)] border border-[#A5CE79]/40 bg-gradient-to-r from-[#527B48] to-[#658E52] px-5 text-xs font-semibold text-white shadow-[0_6px_20px_rgba(82,123,72,0.3)] transition-opacity hover:opacity-95"
+              >
                 Explore Marketplace
-              </Button>
-              <Button href="/#contact" variant="glass" size="sm">
+              </Link>
+              <Link
+                href="/custom-studio"
+                onClick={(e) => handleGatedClick(e, "/custom-studio")}
+                className="inline-flex min-h-10 items-center justify-center rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
+              >
                 Request Custom Build
-              </Button>
+              </Link>
             </div>
           </GlassCard>
         </SylvaReveal>

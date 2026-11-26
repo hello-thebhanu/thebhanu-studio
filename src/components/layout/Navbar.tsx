@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowUpRight,
   Blocks,
@@ -10,18 +10,23 @@ import {
   Home,
   Info,
   Layers,
+  LogOut,
   Mail,
   Package,
   User,
 } from "lucide-react";
-import { NAV_ITEMS, SITE_CONFIG } from "@/lib/constants";
+import {
+  buildLoginRedirectUrl,
+  showAuthToast,
+} from "@/components/auth/AuthToast";
 import { NavCartButton } from "@/components/cart/NavCartButton";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { Button } from "@/components/ui/Button";
 import {
   IconNavbarMenu,
   type IconNavItem,
 } from "@/components/ui/navbar-menu";
+import { useAuthSession } from "@/hooks/useAuthSession";
+import { NAV_ITEMS, SITE_CONFIG } from "@/lib/constants";
 
 const ICON_BY_HREF: Record<string, IconNavItem["icon"]> = {
   "/#top": Home,
@@ -32,6 +37,8 @@ const ICON_BY_HREF: Record<string, IconNavItem["icon"]> = {
   "/#about": Info,
   "/#contact": Mail,
 };
+
+const GATED_HREFS = new Set(["/marketplace", "/components", "/custom-studio"]);
 
 export function BrandMark() {
   return (
@@ -46,6 +53,7 @@ export function BrandMark() {
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const isHome = pathname === "/";
   const isMarketplaceRoute =
     pathname.startsWith("/marketplace") || pathname.startsWith("/products");
@@ -53,10 +61,7 @@ export function Navbar() {
 
   const [scrolled, setScrolled] = useState(false);
   const [expandedHref, setExpandedHref] = useState<string | null>(null);
-  const [authUser, setAuthUser] = useState<{
-    email: string;
-    role: "admin" | "customer";
-  } | null>(null);
+  const { user: authUser, displayName, loading: authLoading, signOut } = useAuthSession();
 
   const iconNavItems = useMemo<IconNavItem[]>(
     () =>
@@ -75,23 +80,6 @@ export function Navbar() {
       : null;
 
   useEffect(() => {
-    let active = true;
-    fetch("/api/auth/me")
-      .then((res) => (res.ok ? res.json() : { user: null }))
-      .then(
-        (data: { user?: { email: string; role: "admin" | "customer" } | null }) => {
-          if (active) setAuthUser(data.user ?? null);
-        },
-      )
-      .catch(() => {
-        if (active) setAuthUser(null);
-      });
-    return () => {
-      active = false;
-    };
-  }, [pathname]);
-
-  useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 18);
     };
@@ -100,9 +88,32 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleSelect = (item: IconNavItem) => {
+  const handleSelect = (
+    item: IconNavItem,
+    event: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    if (!authLoading && !authUser && GATED_HREFS.has(item.href)) {
+      event.preventDefault();
+      showAuthToast("Please sign in to continue");
+      router.push(buildLoginRedirectUrl(item.href));
+      return;
+    }
     setExpandedHref(item.href);
   };
+
+  const handleBuildClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!authLoading && !authUser) {
+      event.preventDefault();
+      showAuthToast("Please sign in to continue");
+      router.push(buildLoginRedirectUrl("/custom-studio"));
+    }
+  };
+
+  const accountHref = authUser
+    ? authUser.role === "admin"
+      ? "/admin"
+      : "/account"
+    : "/login";
 
   return (
     <header
@@ -125,7 +136,7 @@ export function Navbar() {
             >
               <BrandMark />
               <div className="flex flex-col leading-none">
-                <span className="text-sm font-bold tracking-[0.12em] text-[var(--text-primary)] sm:text-base">
+                <span className="text-xs font-bold tracking-[0.1em] text-[var(--text-primary)] sm:text-base sm:tracking-[0.12em]">
                   {SITE_CONFIG.brandName}
                 </span>
                 <span className="hidden font-mono text-[10px] tracking-wider text-[var(--text-muted)] sm:block">
@@ -134,22 +145,49 @@ export function Navbar() {
               </div>
             </Link>
 
-            {/* Mobile / Tablet Quick Actions (Cart remains separate like native) */}
-            <div className="flex items-center gap-1.5 lg:hidden">
+            {/* Mobile / Tablet Quick Actions */}
+            <div className="flex items-center gap-1 sm:gap-1.5 lg:hidden">
               <ThemeToggle />
               <NavCartButton />
+              {authUser ? (
+                <>
+                  <Link
+                    href={accountHref}
+                    aria-label={displayName ?? "Account"}
+                    className="inline-flex h-10 max-w-[110px] items-center gap-1.5 rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-3 text-xs font-medium text-[var(--text-primary)]"
+                  >
+                    <User className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" aria-hidden="true" />
+                    <span className="truncate">{displayName}</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => void signOut()}
+                    aria-label="Sign out"
+                    title="Sign out"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] text-[var(--text-primary)] hover:border-red-400/50 hover:text-red-500 cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  aria-label="Sign in"
+                  className="inline-flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-2.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
+                >
+                  <User className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" aria-hidden="true" />
+                  <span>Sign in</span>
+                </Link>
+              )}
               <Link
-                href={authUser ? "/account" : "/login"}
-                aria-label={authUser ? "Account" : "Sign In"}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
+                href="/custom-studio"
+                onClick={handleBuildClick}
+                className="inline-flex h-9 shrink-0 items-center gap-1 whitespace-nowrap rounded-[var(--radius-pill)] border border-[#A5CE79]/40 bg-gradient-to-r from-[#527B48] to-[#658E52] px-2.5 text-xs font-semibold text-white shadow-sm"
               >
-                <User className="h-4 w-4 text-[var(--accent-primary)]" aria-hidden="true" />
-              </Link>
-              <Button href="/custom-studio" variant="primary" size="sm">
                 <span className="hidden sm:inline">Build Solution</span>
                 <span className="sm:hidden">Build</span>
                 <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </Button>
+              </Link>
             </div>
           </div>
 
@@ -168,17 +206,43 @@ export function Navbar() {
           <div className="hidden items-center gap-2 lg:flex">
             <ThemeToggle />
             <NavCartButton />
+            {authUser ? (
+              <>
+                <Link
+                  href={accountHref}
+                  className="inline-flex min-h-9 max-w-[150px] items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-3.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
+                >
+                  <User className="h-3.5 w-3.5 shrink-0 text-[var(--accent-primary)]" aria-hidden="true" />
+                  <span className="truncate">{displayName}</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => void signOut()}
+                  aria-label="Sign out"
+                  title="Sign out"
+                  className="inline-flex min-h-9 items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-3 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-red-400/50 hover:text-red-500 cursor-pointer"
+                >
+                  <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Sign out</span>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-3.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
+              >
+                <User className="h-3.5 w-3.5 text-[var(--accent-primary)]" aria-hidden="true" />
+                <span>Sign in</span>
+              </Link>
+            )}
             <Link
-              href={authUser ? "/account" : "/login"}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-3.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--glass-border-accent)]"
+              href="/custom-studio"
+              onClick={handleBuildClick}
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-[var(--radius-pill)] border border-[#A5CE79]/40 bg-gradient-to-r from-[#527B48] to-[#658E52] px-4 text-xs font-semibold text-white shadow-[0_6px_20px_rgba(82,123,72,0.3)] transition-opacity hover:opacity-95"
             >
-              <User className="h-3.5 w-3.5 text-[var(--accent-primary)]" aria-hidden="true" />
-              <span>{authUser ? "Account" : "Sign In"}</span>
-            </Link>
-            <Button href="/custom-studio" variant="primary" size="sm">
               <span>Build Solution</span>
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </Button>
+            </Link>
           </div>
         </div>
       </div>

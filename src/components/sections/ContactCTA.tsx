@@ -1,10 +1,32 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowUpRight, Mail } from "lucide-react";
+import {
+  buildLoginRedirectUrl,
+  showAuthToast,
+} from "@/components/auth/AuthToast";
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SylvaReveal } from "@/components/ui/SylvaReveal";
+import { useAuthSession } from "@/hooks/useAuthSession";
 import { SITE_CONFIG } from "@/lib/constants";
 
 export function ContactCTA() {
+  const router = useRouter();
+  const { user, loading } = useAuthSession();
+
+  const handleGuestBlock = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    nextPath: string,
+  ) => {
+    if (!loading && !user) {
+      e.preventDefault();
+      showAuthToast("Please sign in to continue");
+      router.push(buildLoginRedirectUrl(nextPath));
+    }
+  };
   return (
     <section
       id="contact"
@@ -37,18 +59,22 @@ export function ContactCTA() {
               </div>
 
               <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row lg:flex-col">
-                <Button href="/custom-studio" variant="primary" size="lg">
+                <Link
+                  href="/custom-studio"
+                  onClick={(e) => handleGuestBlock(e, "/custom-studio")}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[#A5CE79]/40 bg-gradient-to-r from-[#527B48] to-[#658E52] px-7 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(82,123,72,0.35)] transition-opacity hover:opacity-95"
+                >
                   <span>Open Custom Studio</span>
                   <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button
+                </Link>
+                <a
                   href={`mailto:${SITE_CONFIG.contactEmail}?subject=Project%20Inquiry%20%E2%80%94%20THE%20BHANU`}
-                  variant="glass"
-                  size="md"
+                  onClick={(e) => handleGuestBlock(e, "/custom-studio")}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-pill)] border border-[var(--glass-border-strong)] bg-[var(--glass-bg-subtle)] px-5 text-sm font-medium text-[var(--text-primary)] backdrop-blur-md transition-colors hover:border-[var(--glass-border-accent)]"
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   <span>{SITE_CONFIG.contactEmail}</span>
-                </Button>
+                </a>
                 <Button href="#top" variant="glass" size="md">
                   <span>Back to Top</span>
                   <ArrowUpRight className="h-4 w-4" aria-hidden="true" />

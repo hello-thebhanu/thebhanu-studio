@@ -30,7 +30,7 @@ export interface IconNavbarMenuProps {
   activeHref: string | null;
   /** Route-level highlight href (e.g. /marketplace) when navigating between pages. */
   routeActiveHref?: string | null;
-  onSelect: (item: IconNavItem) => void;
+  onSelect: (item: IconNavItem, event: React.MouseEvent<HTMLAnchorElement>) => void;
   className?: string;
 }
 
@@ -60,7 +60,7 @@ export function IconNavbarMenu({
           <Link
             key={item.href}
             href={item.href}
-            onClick={() => onSelect(item)}
+            onClick={(e) => onSelect(item, e)}
             aria-label={item.label}
             aria-current={isCurrent ? "page" : undefined}
             title={item.label}

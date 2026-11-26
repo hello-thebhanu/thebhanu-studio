@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import { PROJECT_TYPES } from "@/lib/enquiries/config";
 import type { CreateEnquiryPayload } from "@/lib/enquiries/types";
+import { getUserSession } from "@/lib/supabase/auth";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
@@ -18,6 +19,14 @@ function generateReferenceCode(): string {
 }
 
 export async function POST(request: Request) {
+  const session = await getUserSession();
+  if (!session) {
+    return NextResponse.json(
+      { error: "Please sign in to submit an enquiry." },
+      { status: 401 }
+    );
+  }
+
   const { hasAdminSecret } = getSupabaseEnv();
   if (!hasAdminSecret) {
     return NextResponse.json(

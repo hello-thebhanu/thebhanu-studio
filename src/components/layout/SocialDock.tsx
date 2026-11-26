@@ -1,8 +1,14 @@
 "use client";
 
 import type { ComponentType, SVGProps } from "react";
+import { useRouter } from "next/navigation";
 import { Mail, PenLine } from "lucide-react";
+import {
+  buildLoginRedirectUrl,
+  showAuthToast,
+} from "@/components/auth/AuthToast";
 import { Dock, DockIcon } from "@/components/ui/dock";
+import { useAuthSession } from "@/hooks/useAuthSession";
 import { dockLinks } from "@/lib/dock-links";
 
 function GitHubIcon(props: SVGProps<SVGSVGElement>) {
@@ -70,6 +76,9 @@ const DOCK_ITEMS: DockItemConfig[] = [
 ];
 
 export function SocialDock() {
+  const router = useRouter();
+  const { user, loading } = useAuthSession();
+
   return (
     <section
       aria-label="THE BHANU social and contact dock"
@@ -81,15 +90,24 @@ export function SocialDock() {
         </p>
 
         <Dock iconSize={38} iconMagnification={54} iconDistance={120} direction="middle">
-          {DOCK_ITEMS.map(({ label, href, external, Icon }) => (
-            <DockIcon key={label}>
-              <a
-                href={href}
-                target={external ? "_blank" : undefined}
-                rel={external ? "noopener noreferrer" : undefined}
-                aria-label={label}
-                className="group relative flex h-full w-full items-center justify-center rounded-full text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[#6D9B6E]"
-              >
+          {DOCK_ITEMS.map(({ label, href, external, Icon }) => {
+            const isGatedContact = label === "WhatsApp" || label === "Email";
+            return (
+              <DockIcon key={label}>
+                <a
+                  href={href}
+                  target={external ? "_blank" : undefined}
+                  rel={external ? "noopener noreferrer" : undefined}
+                  aria-label={label}
+                  onClick={(e) => {
+                    if (isGatedContact && !loading && !user) {
+                      e.preventDefault();
+                      showAuthToast("Please sign in to continue");
+                      router.push(buildLoginRedirectUrl("/custom-studio"));
+                    }
+                  }}
+                  className="group relative flex h-full w-full items-center justify-center rounded-full text-[var(--text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[#6D9B6E]"
+                >
                 <Icon className="h-5 w-5 transition-transform duration-200 group-hover:-translate-y-0.5" />
                 <span
                   role="tooltip"
@@ -97,9 +115,10 @@ export function SocialDock() {
                 >
                   {label}
                 </span>
-              </a>
-            </DockIcon>
-          ))}
+                </a>
+              </DockIcon>
+            );
+          })}
         </Dock>
       </div>
     </section>

@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -110,56 +111,47 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartCatalogItem[]>(() => {
-    if (typeof window === "undefined") return DEFAULT_CART_ITEMS;
-    try {
-      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as CartCatalogItem[];
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch {
-      // Ignore storage read errors
-    }
-    return DEFAULT_CART_ITEMS;
-  });
-
-  const [placedOrders, setPlacedOrders] = useState<PlacedOrderRecord[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = window.localStorage.getItem(ORDERS_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as PlacedOrderRecord[];
-        if (Array.isArray(parsed)) return parsed;
-      }
-    } catch {
-      // Ignore storage read errors
-    }
-    return [];
-  });
-
-  const [customerInfo, setCustomerInfo] = useState<CustomerBasicInfo>(() => {
-    if (typeof window === "undefined") return EMPTY_CUSTOMER;
-    try {
-      const raw = window.localStorage.getItem(CUSTOMER_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as CustomerBasicInfo;
-        if (parsed && typeof parsed === "object") {
-          return {
-            name: parsed.name ?? "",
-            email: parsed.email ?? "",
-            phone: parsed.phone ?? "",
-            company: parsed.company ?? "",
-          };
-        }
-      }
-    } catch {
-      // Ignore storage read errors
-    }
-    return EMPTY_CUSTOMER;
-  });
-
+  const [items, setItems] = useState<CartCatalogItem[]>(DEFAULT_CART_ITEMS);
+  const [placedOrders, setPlacedOrders] = useState<PlacedOrderRecord[]>([]);
+  const [customerInfo, setCustomerInfo] =
+    useState<CustomerBasicInfo>(EMPTY_CUSTOMER);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const hydratedRef = useRef(false);
+
+  // Hydrate persisted cart/orders/contact info after initial SSR match
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      try {
+        const rawItems = window.localStorage.getItem(CART_STORAGE_KEY);
+        if (rawItems) {
+          const parsed = JSON.parse(rawItems) as CartCatalogItem[];
+          if (Array.isArray(parsed)) setItems(parsed);
+        }
+        const rawOrders = window.localStorage.getItem(ORDERS_STORAGE_KEY);
+        if (rawOrders) {
+          const parsed = JSON.parse(rawOrders) as PlacedOrderRecord[];
+          if (Array.isArray(parsed)) setPlacedOrders(parsed);
+        }
+        const rawCustomer = window.localStorage.getItem(CUSTOMER_STORAGE_KEY);
+        if (rawCustomer) {
+          const parsed = JSON.parse(rawCustomer) as CustomerBasicInfo;
+          if (parsed && typeof parsed === "object") {
+            setCustomerInfo({
+              name: parsed.name ?? "",
+              email: parsed.email ?? "",
+              phone: parsed.phone ?? "",
+              company: parsed.company ?? "",
+            });
+          }
+        }
+      } catch {
+        // Ignore storage read errors
+      } finally {
+        hydratedRef.current = true;
+      }
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, []);
 
   const activeItem =
     items.find((entry) => entry.id === selectedId) ?? items[0] ?? null;
@@ -169,6 +161,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!hydratedRef.current) return;
     try {
       window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
     } catch {
@@ -177,6 +170,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   useEffect(() => {
+    if (!hydratedRef.current) return;
     try {
       window.localStorage.setItem(
         ORDERS_STORAGE_KEY,
@@ -188,6 +182,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [placedOrders]);
 
   useEffect(() => {
+    if (!hydratedRef.current) return;
     try {
       window.localStorage.setItem(
         CUSTOMER_STORAGE_KEY,

@@ -3,14 +3,22 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, CheckCircle2, RotateCcw, ShoppingBag, UserCheck, X } from "lucide-react";
+import {
+  buildLoginRedirectUrl,
+  showAuthToast,
+} from "@/components/auth/AuthToast";
 import CartCard from "@/components/library/CartCard";
 import { useCart } from "@/components/cart/CartProvider";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 const emptySubscribe = () => () => {};
 
 export function NavCartButton() {
+  const router = useRouter();
+  const { user: authUser, loading: authLoading } = useAuthSession();
   const {
     items,
     activeItem,
@@ -51,6 +59,11 @@ export function NavCartButton() {
   );
 
   const handleOpen = () => {
+    if (!authLoading && !authUser) {
+      showAuthToast("Please sign in to continue");
+      router.push(buildLoginRedirectUrl("/marketplace"));
+      return;
+    }
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
