@@ -2,16 +2,136 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, RotateCcw, Search, Sparkles, X } from "lucide-react";
+import { ArrowUpRight, Check, ChevronDown, RotateCcw, Search, ShoppingBag, Sparkles, X } from "lucide-react";
+import { useCart } from "@/components/cart/CartProvider";
 import { ProductStatusBadge } from "@/components/marketplace/ProductStatusBadge";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import {
+  Expandable,
+  ExpandableCard,
+  ExpandableContent,
+  ExpandableTrigger,
+} from "@/components/ui/expandable";
 import type {
   AssetAvailability,
   AssetCategory,
   UiAssetRecord,
 } from "@/lib/assets/types";
 import { AssetLivePreview } from "./AssetLivePreview";
+
+function ExpandableAssetCard({
+  asset,
+  eyebrow,
+  ctaLabel,
+}: {
+  asset: UiAssetRecord;
+  eyebrow: string;
+  ctaLabel: string;
+}) {
+  const [added, setAdded] = useState(false);
+  const { addItem } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addItem({
+      id: `ui-${asset.slug}`,
+      title: asset.name,
+      brand: `THE BHANU · ${eyebrow}`,
+      price: 1,
+      image: "/marketplace/nature-glass-ui-overview.svg",
+      href: `/components/${asset.slug}`,
+      source: "UI Library",
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
+
+  return (
+    <Expandable
+      expandDirection="vertical"
+      expandBehavior="push"
+      transitionDuration={0.3}
+      className="w-full"
+    >
+      {({ isExpanded }) => (
+        <ExpandableCard className="w-full">
+          <article className="flex flex-col p-5">
+            <AssetLivePreview previewKey={asset.previewKey} compact />
+
+            <ExpandableTrigger className="mt-4 text-left">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--accent-primary)]">
+                  {eyebrow}
+                </span>
+                <div className="flex items-center gap-2">
+                  <ProductStatusBadge status={asset.status} />
+                  <ChevronDown
+                    className={`h-4 w-4 text-[var(--text-muted)] transition-transform duration-300 ${
+                      isExpanded ? "rotate-180 text-[var(--accent-primary)]" : ""
+                    }`}
+                    aria-hidden="true"
+                  />
+                </div>
+              </div>
+              <h3 className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
+                {asset.name}
+              </h3>
+              <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+                {asset.summary}
+              </p>
+            </ExpandableTrigger>
+
+            <ExpandableContent preset="fade" stagger staggerChildren={0.05}>
+              <div className="mt-4 flex flex-col gap-3 border-t border-[var(--glass-border)] pt-4">
+                {asset.tags.length > 0 ? (
+                  <ul className="flex flex-wrap gap-1.5">
+                    {asset.tags.slice(0, 3).map((tag) => (
+                      <li
+                        key={tag}
+                        className="rounded-[var(--radius-pill)] border border-[var(--glass-border)] bg-[var(--glass-bg-subtle)] px-2.5 py-0.5 font-mono text-[11px] text-[var(--text-muted)]"
+                      >
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-pill)] bg-[#527B48] px-3.5 text-xs font-semibold text-white transition-colors hover:bg-[#44673B] cursor-pointer"
+                  >
+                    {added ? (
+                      <>
+                        <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                        <span>Added ($1)</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag className="h-3.5 w-3.5" aria-hidden="true" />
+                        <span>Add to Cart · $1</span>
+                      </>
+                    )}
+                  </button>
+
+                  <Link
+                    href={`/components/${asset.slug}`}
+                    className="inline-flex min-h-9 items-center justify-center gap-1 rounded-[var(--radius-pill)] border border-[var(--glass-border-accent)] bg-[var(--accent-soft)] px-3.5 text-xs font-medium text-[var(--accent-primary)] transition-colors hover:bg-[#527B48] hover:text-white"
+                  >
+                    <span>{ctaLabel}</span>
+                    <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+            </ExpandableContent>
+          </article>
+        </ExpandableCard>
+      )}
+    </Expandable>
+  );
+}
 
 export function AssetLibraryBrowser({
   initialAssets,
@@ -223,43 +343,14 @@ export function AssetLibraryBrowser({
               eyebrow="Featured Primitives"
               title="Core building blocks."
             />
-            <div className="mt-6 grid grid-cols-1 items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid grid-cols-1 items-start gap-5 md:grid-cols-2 lg:grid-cols-3">
               {featuredAssets.slice(0, 3).map((asset) => (
-                <GlassCard
+                <ExpandableAssetCard
                   key={asset.id}
-                  as="article"
-                  interactive
-                  className="flex h-full flex-col p-5"
-                >
-                  <AssetLivePreview previewKey={asset.previewKey} compact />
-                  <div className="mt-4 flex flex-1 flex-col">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--accent-primary)]">
-                        {categoryNameMap.get(asset.categorySlug) ??
-                          asset.assetType}
-                      </span>
-                      <ProductStatusBadge status={asset.status} />
-                    </div>
-                    <h3 className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
-                      <Link
-                        href={`/components/${asset.slug}`}
-                        className="hover:text-[var(--accent-primary)]"
-                      >
-                        {asset.name}
-                      </Link>
-                    </h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {asset.summary}
-                    </p>
-                  </div>
-                  <Link
-                    href={`/components/${asset.slug}`}
-                    className="mt-5 inline-flex min-h-10 items-center justify-between rounded-[var(--radius-pill)] border border-[var(--glass-border-accent)] bg-[var(--accent-soft)] px-4 text-sm font-medium text-[var(--accent-primary)] transition-colors hover:bg-[#527B48] hover:text-white"
-                  >
-                    <span>Inspect &amp; Copy Code</span>
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </GlassCard>
+                  asset={asset}
+                  eyebrow={categoryNameMap.get(asset.categorySlug) ?? asset.assetType}
+                  ctaLabel="Inspect"
+                />
               ))}
             </div>
           </div>
@@ -300,53 +391,14 @@ export function AssetLibraryBrowser({
               </p>
             </GlassCard>
           ) : (
-            <div className="mt-6 grid grid-cols-1 items-stretch gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid grid-cols-1 items-start gap-5 md:grid-cols-2 lg:grid-cols-3">
               {filtered.map((asset) => (
-                <GlassCard
+                <ExpandableAssetCard
                   key={asset.id}
-                  as="article"
-                  interactive
-                  className="flex h-full flex-col p-5"
-                >
-                  <AssetLivePreview previewKey={asset.previewKey} compact />
-                  <div className="mt-4 flex flex-1 flex-col">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-[var(--accent-primary)]">
-                        {asset.assetType}
-                      </span>
-                      <ProductStatusBadge status={asset.status} />
-                    </div>
-                    <h3 className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
-                      <Link
-                        href={`/components/${asset.slug}`}
-                        className="hover:text-[var(--accent-primary)]"
-                      >
-                        {asset.name}
-                      </Link>
-                    </h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">
-                      {asset.summary}
-                    </p>
-                    <ul className="mt-4 flex flex-wrap gap-1.5">
-                      {asset.tags.slice(0, 3).map((tag) => (
-                        <li
-                          key={tag}
-                          className="rounded-[var(--radius-pill)] border border-[var(--glass-border)] bg-[var(--glass-bg-subtle)] px-2.5 py-0.5 font-mono text-[11px] text-[var(--text-muted)]"
-                        >
-                          {tag}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <Link
-                    href={`/components/${asset.slug}`}
-                    className="mt-5 inline-flex min-h-10 items-center justify-between rounded-[var(--radius-pill)] border border-[var(--glass-border-accent)] bg-[var(--accent-soft)] px-4 text-sm font-medium text-[var(--accent-primary)] transition-colors hover:bg-[#527B48] hover:text-white"
-                  >
-                    <span>View Component</span>
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
-                </GlassCard>
+                  asset={asset}
+                  eyebrow={asset.assetType}
+                  ctaLabel="View"
+                />
               ))}
             </div>
           )}
