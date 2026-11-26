@@ -46,20 +46,10 @@ export function FloatingSearchBar() {
               type="button"
               onClick={() => setExpanded(true)}
               aria-label="Open quick search"
-              animate={{ y: [0, -4, 0] }}
-              transition={{
-                duration: 3.4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="group relative flex items-center gap-2.5 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3.5 py-2.5 text-sm font-medium text-[var(--text-primary)] shadow-[0_14px_34px_-10px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-colors hover:border-[#6D9B6E]/60 cursor-pointer"
+              className="group relative flex items-center gap-2.5 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3.5 py-2.5 text-sm font-medium text-[var(--text-primary)] shadow-[0_14px_34px_-10px_rgba(0,0,0,0.45)] backdrop-blur-md transition-colors hover:border-[#6D9B6E]/60 cursor-pointer"
             >
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -inset-1 rounded-full bg-[#6D9B6E]/20 opacity-60 blur-md transition-opacity group-hover:opacity-100"
-              />
               <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-[#527B48] text-white shadow-inner">
                 <Search className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" />
               </span>

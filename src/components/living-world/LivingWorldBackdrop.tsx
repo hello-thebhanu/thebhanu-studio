@@ -87,7 +87,7 @@ export function LivingWorldBackdrop({ containerRef }: LivingWorldBackdropProps) 
           renderer = new THREE.WebGLRenderer({
             canvas,
             alpha: true,
-            antialias: !isMobile,
+            antialias: false,
             powerPreference: "high-performance",
           });
         } catch {
@@ -95,7 +95,7 @@ export function LivingWorldBackdrop({ containerRef }: LivingWorldBackdropProps) 
         }
 
         rendererInstance = renderer;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.15 : 1.5));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1));
       renderer.outputEncoding = THREE.sRGBEncoding;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.05;
@@ -923,7 +923,7 @@ export function LivingWorldBackdrop({ containerRef }: LivingWorldBackdropProps) 
           startWorld();
         }
       },
-      { rootMargin: "320px 0px" }
+      { rootMargin: "0px" }
     );
     lazyObserver.observe(container);
 
