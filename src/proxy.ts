@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
+const PUBLIC_EXACT_OR_PREFIX = ["/login", "/signup", "/auth/callback", "/admin/login"];
+
 const PROTECTED_PREFIXES = [
   "/components",
   "/marketplace",
@@ -11,6 +13,13 @@ const PROTECTED_PREFIXES = [
 ];
 
 function isProtectedPath(pathname: string): boolean {
+  if (
+    PUBLIC_EXACT_OR_PREFIX.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    )
+  ) {
+    return false;
+  }
   return PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );

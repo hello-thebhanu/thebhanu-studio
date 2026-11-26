@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
 import { BhanuBot, type BhanuBotState } from "@/components/auth/BhanuBot";
 import { OtpInput } from "@/components/auth/OtpInput";
+import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 import { notifyAuthChanged } from "@/hooks/useAuthSession";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -78,6 +79,18 @@ export function OtpLoginForm() {
   const [otpErrorTrigger, setOtpErrorTrigger] = useState(0);
   const [countdown, setCountdown] = useState(0);
   const [exiting, setExiting] = useState(false);
+  const [oauthConnecting, setOauthConnecting] = useState(false);
+
+  const oauthErrorParam = searchParams.get("oauth_error");
+  const oauthErrorMessage =
+    oauthErrorParam === "cancelled"
+      ? "Sign-in was cancelled. You can try again or use your email code."
+      : oauthErrorParam === "failed"
+        ? "We couldn't complete social sign-in. Please try again or use your email code."
+        : null;
+  const displayError = error ?? oauthErrorMessage;
+  const nextParamRaw = searchParams.get("next");
+  const safeNext = isSafeInternalNext(nextParamRaw) ? nextParamRaw : null;
 
   useEffect(() => {
     if (countdown <= 0) return;
@@ -291,18 +304,18 @@ export function OtpLoginForm() {
                 </label>
               </div>
 
-              {error ? (
+              {displayError ? (
                 <p
                   role="alert"
                   className="rounded-xl border border-red-400/35 bg-red-500/12 px-3.5 py-2.5 text-xs text-red-200"
                 >
-                  {error}
+                  {displayError}
                 </p>
               ) : null}
 
               <motion.button
                 type="submit"
-                disabled={loading}
+                disabled={loading || oauthConnecting}
                 whileHover={reducedMotion ? undefined : { scale: 1.015 }}
                 whileTap={reducedMotion ? undefined : { scale: 0.985 }}
                 className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#A5CE79]/40 bg-gradient-to-r from-[#527B48] to-[#658E52] px-6 text-sm font-semibold text-white shadow-[0_10px_28px_rgba(82,123,72,0.38)] transition-opacity disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
@@ -319,6 +332,13 @@ export function OtpLoginForm() {
                   </>
                 )}
               </motion.button>
+
+              <SocialLoginButtons
+                safeNext={safeNext}
+                disabled={loading}
+                onConnectingChange={setOauthConnecting}
+                onError={(msg) => setError(msg)}
+              />
             </motion.form>
           ) : step === "otp" ? (
             <motion.form
@@ -502,9 +522,9 @@ export function OtpLoginForm() {
           state={
             (step === "success"
               ? "success"
-              : error
+              : displayError
                 ? "error"
-                : step === "otp"
+                : step === "otp" || oauthConnecting
                   ? "otp"
                   : emailFocused
                     ? "email-focus"

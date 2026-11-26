@@ -40,9 +40,11 @@ export async function getUserSession(): Promise<UserSession | null> {
 
     const email = user.email.toLowerCase();
     const metaName =
-      typeof user.user_metadata?.full_name === "string"
-        ? user.user_metadata.full_name
-        : "";
+      (typeof user.user_metadata?.full_name === "string" &&
+        user.user_metadata.full_name) ||
+      (typeof user.user_metadata?.name === "string" &&
+        user.user_metadata.name) ||
+      "";
     const admin = createSupabaseAdminClient();
 
     const { data: profile, error: profileErr } = await admin
